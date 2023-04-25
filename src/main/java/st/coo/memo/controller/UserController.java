@@ -1,0 +1,61 @@
+package st.coo.memo.controller;
+
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
+import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import st.coo.memo.common.ResponseDTO;
+import st.coo.memo.dto.user.RegisterUserRequest;
+import st.coo.memo.dto.user.LoginRequest;
+import st.coo.memo.dto.user.LoginResponse;
+import st.coo.memo.dto.user.UserDto;
+import st.coo.memo.service.UserService;
+
+import java.util.List;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/user")
+public class UserController {
+
+    @Resource
+    private UserService userService;
+
+    @PostMapping("/register")
+    public ResponseDTO<Void> register(@RequestBody @Validated RegisterUserRequest registerUserRequest) {
+        userService.register(registerUserRequest);
+        return ResponseDTO.success();
+    }
+
+    @PostMapping("/update")
+    @SaCheckLogin()
+    public ResponseDTO<Void> update(@RequestBody @Validated RegisterUserRequest registerUserRequest) {
+        userService.register(registerUserRequest);
+        return ResponseDTO.success();
+    }
+
+    @PostMapping("/{id}")
+    @SaCheckLogin
+    public ResponseDTO<UserDto> get(@PathVariable("id") int id) {
+        return ResponseDTO.success(userService.get(id));
+    }
+
+    @PostMapping("/list")
+    @SaCheckRole(value = "ADMIN")
+    public ResponseDTO<List<UserDto>> list() {
+        return ResponseDTO.success(userService.list());
+    }
+
+    @PostMapping("/login")
+    public ResponseDTO<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
+        return ResponseDTO.success(userService.login(loginRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseDTO<Void> logout() {
+        userService.logout();
+        return ResponseDTO.success();
+    }
+}
