@@ -86,3 +86,10 @@ alter table t_resource drop index file_hash;
 -- changeset jerry:4
 
 alter table t_memo add column top varchar(1) null;
+
+-- changeset jerry:5
+
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('OPEN_REGISTER', 'false', 'false');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('STORAGE_TYPE', 'LOCAL', 'LOCAL');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('DOMAIN', 'http://127.0.0.1:38321', NULL);
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('CORS_DOMAIN_LIST', 'http://127.0.0.1:3000', NULL);
