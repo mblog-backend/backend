@@ -1,6 +1,5 @@
 package st.coo.memo.service;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -8,18 +7,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import st.coo.memo.dto.tag.TagDto;
 import st.coo.memo.entity.TTag;
-import st.coo.memo.mapper.TTagMapper;
+import st.coo.memo.mapper.TagMapperExt;
 
 import java.util.List;
-
-import static st.coo.memo.entity.table.Tables.T_TAG;
 
 @Component
 @Slf4j
 public class TagService {
 
     @Resource
-    private TTagMapper tagMapper;
+    private TagMapperExt tagMapper;
 
 
     public List<TagDto> list() {

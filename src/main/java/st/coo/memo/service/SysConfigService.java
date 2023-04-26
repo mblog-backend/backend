@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import st.coo.memo.dto.sysConfig.SaveSysConfigRequest;
 import st.coo.memo.dto.sysConfig.SysConfigDto;
 import st.coo.memo.entity.TSysConfig;
-import st.coo.memo.mapper.TSysConfigMapper;
+import st.coo.memo.mapper.SysConfigMapperExt;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import static st.coo.memo.entity.table.Tables.T_SYS_CONFIG;
 public class SysConfigService {
 
     @Resource
-    private TSysConfigMapper sysConfigMapper;
+    private SysConfigMapperExt sysConfigMapper;
 
     public void save(SaveSysConfigRequest saveSysConfigRequest) {
         for (SysConfigDto item : saveSysConfigRequest.getItems()) {
@@ -42,6 +42,7 @@ public class SysConfigService {
             return dto;
         }).toList();
     }
+
     public List<SysConfigDto> getAll(List<String> keys) {
         List<TSysConfig> list = sysConfigMapper.selectListByQuery(QueryWrapper.create().and(T_SYS_CONFIG.KEY.in(keys)));
         return list.stream().map(r -> {

@@ -23,8 +23,8 @@ import st.coo.memo.common.*;
 import st.coo.memo.dto.resource.UploadResourceResponse;
 import st.coo.memo.entity.TMemo;
 import st.coo.memo.entity.TResource;
-import st.coo.memo.mapper.TMemoMapper;
-import st.coo.memo.mapper.TResourceMapper;
+import st.coo.memo.mapper.MemoMapperExt;
+import st.coo.memo.mapper.ResourceMapperExt;
 import st.coo.memo.service.SysConfigService;
 
 import java.io.File;
@@ -53,10 +53,10 @@ public class ResourceService implements ApplicationContextAware {
     private String tempPath;
 
     @Resource
-    private TResourceMapper resourceMapper;
+    private ResourceMapperExt resourceMapper;
 
     @Resource
-    private TMemoMapper memoMapper;
+    private MemoMapperExt memoMapper;
     private final static Map<StorageType, Class<? extends ResourceProvider>> RESOURCE_PROVIDER_MAP = Maps.newHashMap();
 
     public ResourceService() {
@@ -94,7 +94,7 @@ public class ResourceService implements ApplicationContextAware {
             if (existResource == null) {
                 FileCopyUtils.copy(multipartFile.getInputStream(), target);
                 fileType = Files.probeContentType(new File(targetPath).toPath());
-            }else{
+            } else {
                 targetPath = existResource.getInternalPath();
                 fileType = existResource.getFileType();
             }

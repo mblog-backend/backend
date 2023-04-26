@@ -14,7 +14,7 @@ import st.coo.memo.common.ResponseCode;
 import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.user.*;
 import st.coo.memo.entity.TUser;
-import st.coo.memo.mapper.TUserMapper;
+import st.coo.memo.mapper.UserMapperExt;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ import static st.coo.memo.entity.table.Tables.T_USER;
 public class UserService {
 
     @Resource
-    private TUserMapper userMapper;
+    private UserMapperExt userMapper;
 
     @Resource
     private SysConfigService sysConfigService;
@@ -75,6 +75,7 @@ public class UserService {
         BeanUtils.copyProperties(user, userDto);
         return userDto;
     }
+
     public List<UserDto> list() {
         List<TUser> list = userMapper.selectAll();
         return list.stream().map(user -> {

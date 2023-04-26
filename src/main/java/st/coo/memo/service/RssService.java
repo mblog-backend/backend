@@ -16,8 +16,8 @@ import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.memo.ListMemoRequest;
 import st.coo.memo.dto.memo.ListMemoResponse;
 import st.coo.memo.entity.TUser;
-import st.coo.memo.mapper.TMemoMapper;
-import st.coo.memo.mapper.TUserMapper;
+import st.coo.memo.mapper.MemoMapperExt;
+import st.coo.memo.mapper.UserMapperExt;
 
 import java.util.List;
 
@@ -28,13 +28,13 @@ import static st.coo.memo.entity.table.Tables.T_USER;
 public class RssService {
 
     @Resource
-    private TMemoMapper memoMapper;
+    private MemoMapperExt memoMapper;
 
     @Resource
     private SysConfigService sysConfigService;
 
     @Resource
-    private TUserMapper userMapper;
+    private UserMapperExt userMapper;
 
 
     private final static Splitter SPLITTER = Splitter.on(",").omitEmptyStrings();
@@ -68,7 +68,7 @@ public class RssService {
                 entry.setUpdatedDate(r.getUpdated());
                 entry.setAuthor(r.getAuthorName());
 
-                List<String> tags = SPLITTER.splitToList(r.getTags());
+                List<String> tags = SPLITTER.splitToList(StringUtils.defaultString(r.getTags(),""));
                 List<SyndCategory> categories = tags.stream().map(tag -> {
                     SyndCategory category = new SyndCategoryImpl();
                     category.setLabel(tag);

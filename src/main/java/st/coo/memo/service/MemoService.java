@@ -44,10 +44,10 @@ public class MemoService {
 
 
     @Resource
-    private TMemoMapper memoMapper;
+    private MemoMapperExt memoMapper;
 
     @Resource
-    private TUserMapper userMapper;
+    private UserMapperExt userMapper;
 
     @Resource
     private TagMapperExt tagMapper;
