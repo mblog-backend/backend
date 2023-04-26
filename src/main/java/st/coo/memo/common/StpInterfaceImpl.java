@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 import st.coo.memo.entity.TUser;
-import st.coo.memo.mapper.TUserMapper;
+import st.coo.memo.mapper.UserMapperExt;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class StpInterfaceImpl implements StpInterface {
 
     @Resource
-    private TUserMapper userMapper;
+    private UserMapperExt userMapper;
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
