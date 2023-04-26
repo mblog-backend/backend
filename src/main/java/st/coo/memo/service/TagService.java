@@ -1,5 +1,6 @@
 package st.coo.memo.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import st.coo.memo.entity.TTag;
 import st.coo.memo.mapper.TTagMapper;
 
 import java.util.List;
+
+import static st.coo.memo.entity.table.Tables.T_TAG;
 
 @Component
 @Slf4j
@@ -24,7 +27,8 @@ public class TagService {
     }
 
     public List<TagDto> top10Tags() {
-        List<TTag> rows = tagMapper.selectListByQuery(QueryWrapper.create().orderBy("memo_count desc").limit(10));
+        List<TTag> rows = tagMapper.selectListByQuery(QueryWrapper.create()
+                .orderBy("memo_count desc").limit(10));
         return rows.stream().map(this::convertToDto).toList();
     }
 

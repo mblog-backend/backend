@@ -10,6 +10,7 @@ public class ListMemoResponse {
 
     private List<MemoDto> items;
     private long total;
+    private long totalPage;
 
 
 }

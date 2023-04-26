@@ -1,5 +1,6 @@
 package st.coo.memo.service;
 
+import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -12,6 +13,8 @@ import st.coo.memo.entity.TSysConfig;
 import st.coo.memo.mapper.TSysConfigMapper;
 
 import java.util.List;
+
+import static st.coo.memo.entity.table.Tables.T_SYS_CONFIG;
 
 @Slf4j
 @Component
@@ -39,7 +42,17 @@ public class SysConfigService {
             return dto;
         }).toList();
     }
-
+    public List<SysConfigDto> getAll(List<String> keys) {
+        List<TSysConfig> list = sysConfigMapper.selectListByQuery(QueryWrapper.create().and(T_SYS_CONFIG.KEY.in(keys)));
+        return list.stream().map(r -> {
+            SysConfigDto dto = new SysConfigDto();
+            BeanUtils.copyProperties(r, dto);
+            if (StringUtils.isEmpty(dto.getValue())) {
+                dto.setValue(r.getDefaultValue());
+            }
+            return dto;
+        }).toList();
+    }
 
     public boolean getBoolean(String key) {
         String value = getString(key);

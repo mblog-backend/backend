@@ -42,6 +42,13 @@ public class UserController {
         return ResponseDTO.success(userService.get(id));
     }
 
+    @PostMapping("/current")
+    @SaCheckLogin
+    public ResponseDTO<UserDto> current() {
+        return ResponseDTO.success(userService.current());
+    }
+
+
     @PostMapping("/list")
     @SaCheckRole(value = "ADMIN")
     public ResponseDTO<List<UserDto>> list() {

@@ -93,3 +93,8 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('OPEN_REGISTER', '
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('STORAGE_TYPE', 'LOCAL', 'LOCAL');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('DOMAIN', 'http://127.0.0.1:38321', NULL);
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('CORS_DOMAIN_LIST', 'http://127.0.0.1:3000', NULL);
+
+
+-- changeset jerry:6
+
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEBSITE_TITLE', '个人时光记录', 'false');

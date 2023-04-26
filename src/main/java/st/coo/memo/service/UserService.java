@@ -45,7 +45,7 @@ public class UserService {
         user.setUsername(registerUserRequest.getUsername());
         user.setDisplayName(StringUtils.defaultString(registerUserRequest.getDisplayName(), registerUserRequest.getUsername()));
         user.setPasswordHash(BCrypt.hashpw(registerUserRequest.getPassword()));
-        userMapper.insert(user);
+        userMapper.insertSelective(user);
     }
 
     public void update(UpdateUserRequest updateUserRequest) {
@@ -66,7 +66,15 @@ public class UserService {
         return userDto;
     }
 
-
+    public UserDto current() {
+        TUser user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());
+        UserDto userDto = new UserDto();
+        if (user == null) {
+            return null;
+        }
+        BeanUtils.copyProperties(user, userDto);
+        return userDto;
+    }
     public List<UserDto> list() {
         List<TUser> list = userMapper.selectAll();
         return list.stream().map(user -> {

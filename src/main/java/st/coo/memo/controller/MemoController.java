@@ -24,10 +24,10 @@ public class MemoController {
         return ResponseDTO.success();
     }
 
-    @PostMapping("/setTop")
+    @PostMapping("/update")
     @SaCheckLogin
-    public ResponseDTO<Void> setTop(@RequestParam("id") int id) {
-        memoService.setMemoTop(id);
+    public ResponseDTO<Void> update(@RequestBody @Validated SaveMemoRequest updateMemoRequest) {
+        memoService.update(updateMemoRequest);
         return ResponseDTO.success();
     }
 

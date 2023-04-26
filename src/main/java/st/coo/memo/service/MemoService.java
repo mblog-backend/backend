@@ -10,6 +10,7 @@ import com.mybatisflex.core.row.Db;
 import com.mybatisflex.core.row.Row;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -18,10 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import st.coo.memo.common.MemoStatus;
-import st.coo.memo.common.StorageType;
-import st.coo.memo.common.SysConfigConstant;
-import st.coo.memo.common.Visibility;
+import st.coo.memo.common.*;
 import st.coo.memo.dto.memo.*;
 import st.coo.memo.entity.TMemo;
 import st.coo.memo.entity.TResource;
@@ -42,7 +40,7 @@ import static st.coo.memo.entity.table.Tables.*;
 public class MemoService {
 
     private final static Splitter SPLITTER = Splitter.onPattern("[\n]");
-    private final static Splitter TAG_SPLITTER = Splitter.onPattern("\\s+").omitEmptyStrings();
+    private final static Splitter TAG_SPLITTER = Splitter.onPattern("[(\\s+),]").omitEmptyStrings();
 
 
     @Resource
@@ -55,7 +53,7 @@ public class MemoService {
     private TagMapperExt tagMapper;
 
     @Resource
-    private TResourceMapper resourceMapper;
+    private ResourceMapperExt resourceMapper;
 
     @Resource
     private SysConfigService sysConfigService;
@@ -67,7 +65,7 @@ public class MemoService {
     @Transactional
     public void remove(int id) {
         TMemo tMemo = memoMapper.selectOneById(id);
-        if (tMemo == null){
+        if (tMemo == null) {
             return;
         }
         if (StringUtils.hasText(tMemo.getTags())) {
@@ -80,57 +78,116 @@ public class MemoService {
         memoMapper.deleteById(id);
     }
 
-    public void setMemoTop(int id){
+    public void setMemoTop(int id) {
         TMemo tMemo = new TMemo();
         tMemo.setId(id);
         tMemo.setTop("Y");
-        memoMapper.update(tMemo,true);
+        memoMapper.update(tMemo, true);
+    }
+
+    private String replaceFirstLine(String content, List<String> tags) {
+        if (!StringUtils.hasText(content)) {
+            return "";
+        }
+        List<String> lines = Lists.newArrayList(Splitter.on("\n").omitEmptyStrings().splitToList(content));
+        String firstLine = lines.get(0);
+        if (!StringUtils.hasText(firstLine)) {
+            return "";
+        }
+        for (String tag : tags) {
+            firstLine = firstLine.replaceFirst(tag+"[,(\\s+)]?","");
+        }
+        if (!StringUtils.hasLength(firstLine)){
+            lines.remove(0);
+        }else{
+            lines.set(0,firstLine);
+        }
+        return Joiner.on("\n").join(lines);
     }
 
     public void save(SaveMemoRequest saveMemoRequest) {
+        List<String> tags = parseTags(saveMemoRequest.getContent());
+        String content = saveMemoRequest.getContent();
         TMemo tMemo = new TMemo();
         tMemo.setTop(BooleanUtils.toString(saveMemoRequest.isTop(), "Y", "N"));
-        List<String> tags = parseTags(saveMemoRequest.getContent());
+        tMemo.setUserId(StpUtil.getLoginIdAsInt());
+        tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         if (saveMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(saveMemoRequest.getVisibility().name());
         }
+        tMemo.setContent(replaceFirstLine(content,tags).trim());
 
-        if (saveMemoRequest.getId() > 0) {
-            tMemo.setId(saveMemoRequest.getId());
-        } else {
-            tMemo.setUserId(StpUtil.getLoginIdAsInt());
+        List<TTag> existsTagList = tagMapper.selectListByQuery(QueryWrapper.create().
+                and(T_TAG.NAME.in(tags)).
+                and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt())));
+
+        if (!CollectionUtils.isEmpty(existsTagList)) {
+            tags.removeAll(existsTagList.stream().map(TTag::getName).toList());
         }
 
-        List<TTag> existsTagList;
-        List<String> needInsertTags;
+        transactionTemplate.execute(status -> {
+            Assert.isTrue(memoMapper.insertSelective(tMemo) == 1, "新增memo异常");
+            for (String name : tags) {
+                TTag tag = new TTag();
+                tag.setName(name);
+                tag.setUserId(StpUtil.getLoginIdAsInt());
+                tag.setMemoCount(1);
+                Assert.isTrue(tagMapper.insertSelective(tag) == 1, "保存tag异常");
+            }
+            for (TTag tag : existsTagList) {
+                Assert.isTrue(tagMapper.incrementTagCount(StpUtil.getLoginIdAsInt(), tag.getName()) == 1, "更新tag计数异常");
+            }
+            if (!CollectionUtils.isEmpty(saveMemoRequest.getPublicIds())) {
+                for (String publicId : saveMemoRequest.getPublicIds()) {
+                    TResource resource = new TResource();
+                    resource.setMemoId(tMemo.getId());
+                    Assert.isTrue(resourceMapper.updateByQuery(resource, QueryWrapper.create()
+                            .and(T_RESOURCE.MEMO_ID.eq(0)).and(T_RESOURCE.PUBLIC_ID.eq(publicId))) == 1, "更新resource异常");
+                }
+            }
+            return true;
+        });
+    }
 
+
+    public void update(SaveMemoRequest updateMemoRequest) {
+        TMemo existMemo = memoMapper.selectOneById(updateMemoRequest.getId());
+        if (existMemo == null) {
+            throw new BizException(ResponseCode.fail, "memo不存在");
+        }
+        String oldTags = existMemo.getTags();
+        String content = updateMemoRequest.getContent();
+        String[] lines = content.split("\n");
+        TMemo tMemo = new TMemo();
+        tMemo.setId(existMemo.getId());
+        List<String> tags = parseTags(updateMemoRequest.getContent());
+        tMemo.setTop(BooleanUtils.toString(updateMemoRequest.isTop(), "Y", "N"));
+        tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
+        tMemo.setContent(replaceFirstLine(content,tags).trim());
+        if (updateMemoRequest.getVisibility() != null) {
+            tMemo.setVisibility(updateMemoRequest.getVisibility().name());
+        }
+        List<TTag> existsTagList;
+        List<String> deletedTagList;
+        if (StringUtils.hasText(oldTags)) {
+            List<String> oldTagList = Splitter.on(",").omitEmptyStrings().splitToList(oldTags);
+            deletedTagList = ListUtils.subtract(oldTagList, tags);
+            tags.removeAll(oldTagList);
+        } else {
+            deletedTagList = Lists.newArrayList();
+        }
         if (!CollectionUtils.isEmpty(tags)) {
-            tMemo.setTags(Joiner.on(",").join(tags) + ",");
-            String content = saveMemoRequest.getContent();
-            for (String tag : tags) {
-                content = content.replaceFirst(tag, "");
-            }
-            existsTagList = tagMapper.selectListByQuery(QueryWrapper.create().and(T_TAG.NAME.in(tags)));
-            if (!CollectionUtils.isEmpty(existsTagList)) {
-                tags.removeAll(existsTagList.stream().map(TTag::getName).toList());
-            }
-            needInsertTags = tags;
-            tMemo.setContent(content.trim());
+            existsTagList = tagMapper.selectListByQuery(QueryWrapper.create().
+                    and(T_TAG.NAME.in(tags)).
+                    and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt())));
+            tags.removeAll(existsTagList.stream().map(TTag::getName).toList());
         } else {
             existsTagList = Lists.newArrayList();
-            needInsertTags = Lists.newArrayList();
-            tMemo.setContent(saveMemoRequest.getContent().trim());
         }
-        if (!CollectionUtils.isEmpty(saveMemoRequest.getPublicIds())) {
-            long count = resourceMapper.selectCountByQuery(QueryWrapper.create()
-                    .and(T_RESOURCE.PUBLIC_ID.in(saveMemoRequest.getPublicIds()))
-                    .and(T_RESOURCE.USER_ID.eq(StpUtil.getLoginIdAsInt())));
-            Assert.isTrue(count == saveMemoRequest.getPublicIds().size(), "资源不属于当前用户");
-        }
+
         transactionTemplate.execute(status -> {
-            int row = tMemo.getId() == null ? memoMapper.insertSelective(tMemo) : memoMapper.update(tMemo, true);
-            Assert.isTrue(row == 1, "保存memo异常");
-            for (String name : needInsertTags) {
+            Assert.isTrue(memoMapper.update(tMemo, true) == 1, "保存memo异常");
+            for (String name : tags) {
                 TTag tag = new TTag();
                 tag.setName(name);
                 tag.setUserId(StpUtil.getLoginIdAsInt());
@@ -140,11 +197,14 @@ public class MemoService {
             for (TTag tag : existsTagList) {
                 Assert.isTrue(tagMapper.incrementTagCount(StpUtil.getLoginIdAsInt(), tag.getName()) == 1, "保存tag异常");
             }
-            if (!CollectionUtils.isEmpty(saveMemoRequest.getPublicIds())) {
-                for (String publicId : saveMemoRequest.getPublicIds()) {
+            for (String tag : deletedTagList) {
+                Assert.isTrue(tagMapper.decrementTagCount(StpUtil.getLoginIdAsInt(), tag) == 1, "保存tag异常");
+            }
+            resourceMapper.clearMemoResource(tMemo.getId());
+            if (!CollectionUtils.isEmpty(updateMemoRequest.getPublicIds())) {
+                for (String publicId : updateMemoRequest.getPublicIds()) {
                     TResource resource = new TResource();
                     resource.setMemoId(tMemo.getId());
-
                     Assert.isTrue(resourceMapper.updateByQuery(resource, QueryWrapper.create()
                             .and(T_RESOURCE.MEMO_ID.eq(0)).and(T_RESOURCE.PUBLIC_ID.eq(publicId))) == 1, "更新resource异常");
                 }
@@ -153,7 +213,6 @@ public class MemoService {
             return true;
         });
     }
-
 
     private List<String> parseTags(String content) {
         List<String> list = SPLITTER.splitToList(content);
@@ -207,10 +266,9 @@ public class MemoService {
 
     private ListMemoResponse wrapList(ListMemoRequest listMemoRequest, QueryWrapper wrapper) {
         Page<TMemo> page = memoMapper.paginate(listMemoRequest.getPage(), listMemoRequest.getSize(), wrapper);
-
-
         ListMemoResponse listMemoResponse = new ListMemoResponse();
         listMemoResponse.setTotal(page.getTotalRow());
+        listMemoResponse.setTotalPage(page.getTotalPage());
         listMemoResponse.setItems(page.getRecords().stream().map(this::convertToDto).collect(Collectors.toList()));
         return listMemoResponse;
     }
