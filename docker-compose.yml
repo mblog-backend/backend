@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql-8.0.33
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 8GfCHJbnPCiAquNP
+      MYSQL_DATABASE: yoyo
+      MYSQL_USER: yoyo
+      MYSQL_PASSWORD: FeZ3DVjdFMAdzJmu
+    networks:
+      - backend
+
+  yoyo-server:
+    image: kingwrcy/yoyo:0.0.1
+    container_name: yoyo
+    restart: always
+    volumes:
+      - yoyo_data:/opt/memo/upload
+      - ./application.properties:/app/application.properties
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    expose:
+      - 38321
+    networks:
+      - backend
