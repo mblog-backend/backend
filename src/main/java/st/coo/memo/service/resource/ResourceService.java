@@ -135,8 +135,9 @@ public class ResourceService implements ApplicationContextAware {
         if (tResource.getMemoId() > 0) {
             QueryWrapper wrapper = QueryWrapper.create().and(T_MEMO.ID.eq(tResource.getMemoId()));
             if (isLogin) {
-                wrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name())))
-                        .or(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE).and(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt())));
+                wrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name()))
+                        .or(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE).and(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()))))
+                        ;
             } else {
                 wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
             }

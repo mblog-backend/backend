@@ -28,6 +28,7 @@ import st.coo.memo.entity.TUser;
 import st.coo.memo.mapper.*;
 
 import java.time.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -168,13 +169,9 @@ public class MemoService {
             tMemo.setVisibility(updateMemoRequest.getVisibility().name());
         }
         List<TTag> existsTagList;
-        List<String> deletedTagList;
+        List<String> oldTagList = new ArrayList<>();
         if (StringUtils.hasText(oldTags)) {
-            List<String> oldTagList = Splitter.on(",").omitEmptyStrings().splitToList(oldTags);
-            deletedTagList = ListUtils.subtract(oldTagList, tags);
-            tags.removeAll(oldTagList);
-        } else {
-            deletedTagList = Lists.newArrayList();
+            oldTagList = Splitter.on(",").omitEmptyStrings().splitToList(oldTags);
         }
         if (!CollectionUtils.isEmpty(tags)) {
             existsTagList = tagMapper.selectListByQuery(QueryWrapper.create().
@@ -185,6 +182,7 @@ public class MemoService {
             existsTagList = Lists.newArrayList();
         }
 
+        List<String> finalOldTagList = oldTagList;
         transactionTemplate.execute(status -> {
             Assert.isTrue(memoMapper.update(tMemo, true) == 1, "保存memo异常");
             for (String name : tags) {
@@ -194,12 +192,13 @@ public class MemoService {
                 tag.setMemoCount(1);
                 Assert.isTrue(tagMapper.insertSelective(tag) == 1, "保存tag异常");
             }
+            for (String tag : finalOldTagList) {
+                Assert.isTrue(tagMapper.decrementTagCount(StpUtil.getLoginIdAsInt(), tag) == 1, "保存tag异常");
+            }
             for (TTag tag : existsTagList) {
                 Assert.isTrue(tagMapper.incrementTagCount(StpUtil.getLoginIdAsInt(), tag.getName()) == 1, "保存tag异常");
             }
-            for (String tag : deletedTagList) {
-                Assert.isTrue(tagMapper.decrementTagCount(StpUtil.getLoginIdAsInt(), tag) == 1, "保存tag异常");
-            }
+
             resourceMapper.clearMemoResource(tMemo.getId());
             if (!CollectionUtils.isEmpty(updateMemoRequest.getPublicIds())) {
                 for (String publicId : updateMemoRequest.getPublicIds()) {
