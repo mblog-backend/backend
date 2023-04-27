@@ -96,12 +96,12 @@ public class MemoService {
             return "";
         }
         for (String tag : tags) {
-            firstLine = firstLine.replaceFirst(tag+"[,(\\s+)]?","");
+            firstLine = firstLine.replaceFirst(tag + "[,(\\s+)]?", "");
         }
-        if (!StringUtils.hasLength(firstLine)){
+        if (!StringUtils.hasLength(firstLine)) {
             lines.remove(0);
-        }else{
-            lines.set(0,firstLine);
+        } else {
+            lines.set(0, firstLine);
         }
         return Joiner.on("\n").join(lines);
     }
@@ -116,7 +116,7 @@ public class MemoService {
         if (saveMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(saveMemoRequest.getVisibility().name());
         }
-        tMemo.setContent(replaceFirstLine(content,tags).trim());
+        tMemo.setContent(replaceFirstLine(content, tags).trim());
 
         List<TTag> existsTagList = tagMapper.selectListByQuery(QueryWrapper.create().
                 and(T_TAG.NAME.in(tags)).
@@ -164,7 +164,7 @@ public class MemoService {
         List<String> tags = parseTags(updateMemoRequest.getContent());
         tMemo.setTop(BooleanUtils.toString(updateMemoRequest.isTop(), "Y", "N"));
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
-        tMemo.setContent(replaceFirstLine(content,tags).trim());
+        tMemo.setContent(replaceFirstLine(content, tags).trim());
         if (updateMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(updateMemoRequest.getVisibility().name());
         }
@@ -277,8 +277,8 @@ public class MemoService {
         boolean isLogin = StpUtil.isLogin();
         QueryWrapper queryWrapper = QueryWrapper.create().and(T_MEMO.ID.eq(id));
         if (isLogin) {
-            queryWrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name())))
-                    .or(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()).and(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE.name())));
+            queryWrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name()))
+                    .or(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()).and(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE.name()))));
         } else {
             queryWrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name())));
         }

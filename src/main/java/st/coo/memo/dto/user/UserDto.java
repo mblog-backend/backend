@@ -21,4 +21,5 @@ public class UserDto {
     private Timestamp updated;
 
     private String role;
+    private String avatarUrl;
 }

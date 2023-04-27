@@ -61,6 +61,7 @@ public class ResourceService implements ApplicationContextAware {
 
     public ResourceService() {
         RESOURCE_PROVIDER_MAP.put(StorageType.LOCAL, LocalResourceProvider.class);
+        RESOURCE_PROVIDER_MAP.put(StorageType.QINIU, QiNiuResourceProvider.class);
     }
 
     public List<UploadResourceResponse> upload(MultipartFile[] multipartFiles) {
@@ -81,7 +82,6 @@ public class ResourceService implements ApplicationContextAware {
         String fileName = publicId + "." + FileNameUtil.getSuffix(originalFilename);
         String parentDir = DateFormatUtils.format(new Date(), "yyyyMMdd");
         String targetPath = tempPath + File.separator + parentDir + File.separator + fileName;
-        String domain = Objects.equals(storageType, StorageType.LOCAL) ? sysConfigService.getString(SysConfigConstant.DOMAIN) + "/api" : "";
         byte[] content = null;
         String fileType = "";
         String fileHash = "";
@@ -120,7 +120,7 @@ public class ResourceService implements ApplicationContextAware {
 
         UploadResourceResponse uploadResourceResponse = new UploadResourceResponse();
         uploadResourceResponse.setPublicId(publicId);
-        uploadResourceResponse.setExternalPath(domain + url);
+        uploadResourceResponse.setExternalPath(url);
 
         return uploadResourceResponse;
     }
@@ -137,7 +137,7 @@ public class ResourceService implements ApplicationContextAware {
             if (isLogin) {
                 wrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name()))
                         .or(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE).and(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()))))
-                        ;
+                ;
             } else {
                 wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
             }

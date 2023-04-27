@@ -98,3 +98,10 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('CORS_DOMAIN_LIST'
 -- changeset jerry:6
 
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEBSITE_TITLE', '个人时光记录', 'false');
+
+-- changeset jerry:7
+alter table t_resource modify column storage_type varchar(20);
+
+-- changeset jerry:8
+alter table t_user modify column bio text;
+alter table t_user add column avatar_url varchar(150);

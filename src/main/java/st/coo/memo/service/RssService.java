@@ -16,7 +16,6 @@ import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.memo.ListMemoRequest;
 import st.coo.memo.dto.memo.ListMemoResponse;
 import st.coo.memo.entity.TUser;
-import st.coo.memo.mapper.MemoMapperExt;
 import st.coo.memo.mapper.UserMapperExt;
 
 import java.util.List;
@@ -27,8 +26,6 @@ import static st.coo.memo.entity.table.Tables.T_USER;
 @Component
 public class RssService {
 
-    @Resource
-    private MemoMapperExt memoMapper;
 
     @Resource
     private SysConfigService sysConfigService;
@@ -61,14 +58,14 @@ public class RssService {
                 SyndEntry entry = new SyndEntryImpl();
                 SyndContent content = new SyndContentImpl();
                 content.setValue(r.getContent());
-                entry.setTitle(StringUtils.substring(r.getContent(),0,20));
+                entry.setTitle(StringUtils.substring(r.getContent(), 0, 20));
                 entry.setLink(domain + "/memo/" + r.getId());
                 entry.setDescription(content);
                 entry.setPublishedDate(r.getCreated());
                 entry.setUpdatedDate(r.getUpdated());
                 entry.setAuthor(r.getAuthorName());
 
-                List<String> tags = SPLITTER.splitToList(StringUtils.defaultString(r.getTags(),""));
+                List<String> tags = SPLITTER.splitToList(StringUtils.defaultString(r.getTags(), ""));
                 List<SyndCategory> categories = tags.stream().map(tag -> {
                     SyndCategory category = new SyndCategoryImpl();
                     category.setLabel(tag);

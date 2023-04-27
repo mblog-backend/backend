@@ -8,4 +8,5 @@ public class UpdateUserRequest {
     private String displayName;
     private String email;
     private String bio;
+    private String avatarUrl;
 }

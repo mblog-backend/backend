@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import st.coo.memo.common.ResponseDTO;
-import st.coo.memo.dto.user.RegisterUserRequest;
-import st.coo.memo.dto.user.LoginRequest;
-import st.coo.memo.dto.user.LoginResponse;
-import st.coo.memo.dto.user.UserDto;
+import st.coo.memo.dto.user.*;
 import st.coo.memo.service.UserService;
 
 import java.util.List;
@@ -31,8 +28,8 @@ public class UserController {
 
     @PostMapping("/update")
     @SaCheckLogin()
-    public ResponseDTO<Void> update(@RequestBody @Validated RegisterUserRequest registerUserRequest) {
-        userService.register(registerUserRequest);
+    public ResponseDTO<Void> update(@RequestBody @Validated UpdateUserRequest updateUserRequest) {
+        userService.update(updateUserRequest);
         return ResponseDTO.success();
     }
 

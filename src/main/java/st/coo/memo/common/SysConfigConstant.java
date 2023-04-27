@@ -6,4 +6,5 @@ public class SysConfigConstant {
     public final static String CORS_DOMAIN_LIST = "CORS_DOMAIN_LIST";
     public final static String DOMAIN = "DOMAIN";
     public final static String WEBSITE_TITLE = "WEBSITE_TITLE";
+    public final static String QINIU_PARAM = "QINIU_PARAM";
 }
