@@ -4,7 +4,7 @@ name: memo-server
 
 steps:
   - name: maven build
-    image: maven:3.9.1-sapmachine-17-alpine
+    image: maven:3.9.1-sapmachine-17
     volumes:
       - name: maven-repo
         path: /root/.m2
