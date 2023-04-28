@@ -15,7 +15,7 @@ steps:
     image: plugins/docker
     settings:
       registry: web.kingwrcy.cn:47382
-      repo: kingwrcy/memo-server
+      repo: web.kingwrcy.cn:47382/kingwrcy/memo-server
       tags: latest
       username:
         from_secret: docker_username
