@@ -28,7 +28,7 @@ steps:
       host:
         - 192.168.2.33
       username: root
-      password:
+      key:
         from_secret: ds920_private_key
       port: 22
       command_timeout: 2m
