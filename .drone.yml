@@ -1,0 +1,29 @@
+kind: pipeline
+type: docker
+name: YoYo
+
+steps:
+  - name: maven build
+    image: maven:3.9.1-sapmachine-17-alpine
+    volumes:
+      - name: maven-repo
+        path: /root/.m2
+    commands:
+      - mvn -DskipTests=true clean package
+
+  - name: docker build
+    image: plugins/docker
+    settings:
+      registry: web.kingwrcy.cn:47382
+      username: kingwrcy
+      password:
+        from_secret: docker_password
+      repo: kingwrcy/memo-server
+      auto_tag: true
+
+
+
+volumes:
+  - name: maven-repo
+    host:
+      path: /var/lib/maven-repo
