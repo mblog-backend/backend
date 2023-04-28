@@ -22,6 +22,19 @@ steps:
       password:
         from_secret: docker_password
 
+  - name: start sevice
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        - 192.168.2.33
+      username: root
+      password:
+        from_secret: ds920_private_key
+      port: 22
+      command_timeout: 2m
+      script:
+        - /volume1/docker/drone/memo-server/startup.sh
+
 
 
 
