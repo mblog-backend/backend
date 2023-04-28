@@ -120,7 +120,10 @@ public class ResourceService implements ApplicationContextAware {
 
         UploadResourceResponse uploadResourceResponse = new UploadResourceResponse();
         uploadResourceResponse.setPublicId(publicId);
-        uploadResourceResponse.setExternalPath(url);
+        if (Objects.equals(tResource.getStorageType(),StorageType.LOCAL.name())){
+            String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
+            uploadResourceResponse.setExternalPath(domain+url);
+        }
 
         return uploadResourceResponse;
     }
