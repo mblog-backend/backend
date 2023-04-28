@@ -105,3 +105,6 @@ alter table t_resource modify column storage_type varchar(20);
 -- changeset jerry:8
 alter table t_user modify column bio text;
 alter table t_user add column avatar_url varchar(150);
+
+-- changeset jerry:9
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('QINIU_PARAM', '{}','{}');

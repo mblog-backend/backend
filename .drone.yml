@@ -17,13 +17,13 @@ steps:
       registry: web.kingwrcy.cn:47382
       repo: web.kingwrcy.cn:47382/kingwrcy/memo-server
       tags: latest
-      cache_from: openjdk:17-alpine
+      cache_from: web.kingwrcy.cn:47382/kingwrcy/memo-server:latest
       username:
         from_secret: docker_username
       password:
         from_secret: docker_password
 
-  - name: start sevice
+  - name: start service
     image: appleboy/drone-ssh
     settings:
       host:
