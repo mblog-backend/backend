@@ -303,7 +303,7 @@ public class MemoService {
         tMemo.setResources(resources.stream().map(r -> {
             MemoDto.ResourceItem item = new MemoDto.ResourceItem();
             if (Objects.equals(r.getStorageType(), StorageType.LOCAL.name())) {
-                item.setUrl(domain + "/api" + r.getExternalLink());
+                item.setUrl(domain + r.getExternalLink());
             } else {
                 item.setUrl(r.getExternalLink());
             }
