@@ -1,16 +1,8 @@
 kind: pipeline
 type: docker
 name: memo-server
-clone:
-  disable: true
 
 steps:
-
-  - name: clone project
-    image: alpine/git
-    commands:
-      - git clone https://web.kingwrcy.cn:47382/kingwrcy/memo-server.git
-
   - name: maven build
     image: maven:3.9.1-sapmachine-17-alpine
     volumes:
