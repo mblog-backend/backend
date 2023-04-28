@@ -15,11 +15,13 @@ steps:
     image: plugins/docker
     settings:
       registry: web.kingwrcy.cn:47382
-      username: kingwrcy
-      password:
-        from_secret: docker_password
       repo: kingwrcy/memo-server
       auto_tag: true
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+
 
 
 
