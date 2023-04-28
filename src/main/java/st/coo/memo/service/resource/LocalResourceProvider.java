@@ -27,7 +27,6 @@ public class LocalResourceProvider implements ResourceProvider {
     @Override
     public String upload(String filePath) {
         String publicId = FileNameUtil.getPrefix(filePath);
-        String prefix = sysConfigService.getString(SysConfigConstant.DOMAIN) + "/api";
-        return prefix+"/resource/"+publicId;
+        return "/api/resource/"+publicId;
     }
 }

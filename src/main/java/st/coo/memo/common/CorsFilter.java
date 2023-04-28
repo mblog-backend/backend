@@ -21,7 +21,7 @@ public class CorsFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         log.info("启动跨域过滤器");
     }
-
+m
     @Resource
     private SysConfigService sysConfigService;
 

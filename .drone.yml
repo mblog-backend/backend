@@ -3,24 +3,24 @@ type: docker
 name: memo-server
 
 steps:
-#  - name: maven build
-#    image: maven:3.9.1-sapmachine-17
-#    volumes:
-#      - name: maven-repo
-#        path: /root/.m2
-#    commands:
-#      - mvn -DskipTests=true clean package
-#
-#  - name: docker build
-#    image: plugins/docker
-#    settings:
-#      registry: web.kingwrcy.cn:47382
-#      repo: web.kingwrcy.cn:47382/kingwrcy/memo-server
-#      tags: latest
-#      username:
-#        from_secret: docker_username
-#      password:
-#        from_secret: docker_password
+  - name: maven build
+    image: maven:3.9.1-sapmachine-17
+    volumes:
+      - name: maven-repo
+        path: /root/.m2
+    commands:
+      - mvn -DskipTests=true clean package
+
+  - name: docker build
+    image: plugins/docker
+    settings:
+      registry: web.kingwrcy.cn:47382
+      repo: web.kingwrcy.cn:47382/kingwrcy/memo-server
+      tags: latest
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
 
   - name: start sevice
     image: appleboy/drone-ssh
@@ -35,11 +35,7 @@ steps:
       script:
         - cd /volume1/docker/drone/memo-server/
         - chmod +x ./startup.sh
-        - whoami
         - ./startup.sh
-
-
-
 
 volumes:
   - name: maven-repo
