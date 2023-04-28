@@ -16,7 +16,7 @@ steps:
     settings:
       registry: web.kingwrcy.cn:47382
       repo: kingwrcy/memo-server
-      auto_tag: true
+      tags: latest
       username:
         from_secret: docker_username
       password:
