@@ -33,7 +33,10 @@ steps:
       port: 22
       command_timeout: 2m
       script:
-        - /volume1/docker/drone/memo-server/startup.sh
+        - cd /volume1/docker/drone/memo-server/
+        - chmod +x ./startup.sh
+        - whoami
+        - ./startup.sh
 
 
 
