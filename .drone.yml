@@ -19,7 +19,7 @@ steps:
   - name: docker build
     image: plugins/docker
     settings:
-      registry: 192.168.2.33:47382
+      registry: http://192.168.2.33:47382
       repo: 192.168.2.33:47382/kingwrcy/memo-server
       tags: latest
       cache_from: 192.168.2.33:47382/kingwrcy/memo-server:latest
