@@ -108,3 +108,8 @@ alter table t_user add column avatar_url varchar(150);
 
 -- changeset jerry:9
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('QINIU_PARAM', '{}','{}');
+
+-- changeset jerry:10
+alter table t_tag drop primary key;
+alter table t_tag add column id int primary key auto_increment;
+alter table t_tag add unique index tag_IDX (user_id,name);

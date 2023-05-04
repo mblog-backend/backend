@@ -3,8 +3,7 @@ package st.coo.memo.dto.tag;
 import lombok.Data;
 
 @Data
-public class TagDto {
+public class TagUpdateDto {
     private int id;
     private String name;
-    private int count;
 }

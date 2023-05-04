@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 @Configuration
 public class MyBatisFlexConfig {
 
-    @Value("${enable.sql.log:false}")
-    private boolean enableSqlLog;
+    @Value("${enable.sql.log:true}")
+    private boolean enableSqlLog = true;
 
     public MyBatisFlexConfig() {
         if (enableSqlLog) {

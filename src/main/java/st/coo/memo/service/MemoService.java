@@ -92,7 +92,7 @@ public class MemoService {
         if (!StringUtils.hasText(content)) {
             return "";
         }
-        List<String> lines = Lists.newArrayList(Splitter.on("\n").omitEmptyStrings().splitToList(content));
+        List<String> lines = Lists.newArrayList(Splitter.on("\n").splitToList(content));
         String firstLine = lines.get(0);
         if (!StringUtils.hasText(firstLine)) {
             return "";
@@ -120,7 +120,7 @@ public class MemoService {
         }
         tMemo.setContent(replaceFirstLine(content, tags).trim());
 
-        List<TTag> existsTagList = tagMapper.selectListByQuery(QueryWrapper.create().
+        List<TTag> existsTagList = tags.size() == 0 ? Lists.newArrayList() :tagMapper.selectListByQuery(QueryWrapper.create().
                 and(T_TAG.NAME.in(tags)).
                 and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt())));
 

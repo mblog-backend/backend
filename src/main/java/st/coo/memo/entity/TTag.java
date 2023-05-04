@@ -1,6 +1,7 @@
 package st.coo.memo.entity;
 
 import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -10,11 +11,9 @@ import java.sql.Timestamp;
 public class TTag implements Serializable {
 
     
-    @Id
     private String name;
 
     
-    @Id
     private Integer userId;
 
     
@@ -25,6 +24,10 @@ public class TTag implements Serializable {
 
     
     private Integer memoCount;
+
+    
+    @Id(keyType = KeyType.Auto)
+    private Integer id;
 
     public String getName() {
         return name;
@@ -64,6 +67,14 @@ public class TTag implements Serializable {
 
     public void setMemoCount(Integer memoCount) {
         this.memoCount = memoCount;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 }
