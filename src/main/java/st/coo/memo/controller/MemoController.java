@@ -54,6 +54,7 @@ public class MemoController {
         return ResponseDTO.success(memoService.listArchived(listMemoRequest));
     }
 
+
     @PostMapping("/statistics")
     @SaCheckLogin
     public ResponseDTO<StatisticsResponse> statistics(@RequestBody @Validated StatisticsRequest statisticsRequest) {
