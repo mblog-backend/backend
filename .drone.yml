@@ -38,13 +38,6 @@ steps:
         - chmod +x ./startup.sh
         - ./startup.sh
 
-trigger:
-  branch:
-    - main
-  event:
-    - push
-
-
 volumes:
   - name: maven-repo
     host:
