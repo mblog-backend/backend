@@ -21,7 +21,6 @@ public class MemoController {
     @SaCheckLogin
     public ResponseDTO<Void> create(@RequestBody @Validated SaveMemoRequest saveMemoRequest) {
         memoService.save(saveMemoRequest);
-
         return ResponseDTO.success();
     }
 
