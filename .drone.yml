@@ -1,6 +1,11 @@
 kind: pipeline
 type: docker
 name: memo-server
+trigger:
+  branch:
+    - main
+  event:
+    - push
 
 steps:
   - name: maven build
@@ -37,6 +42,8 @@ steps:
         - cd /volume1/docker/drone/memo-server/
         - chmod +x ./startup.sh
         - ./startup.sh
+
+
 
 volumes:
   - name: maven-repo
