@@ -43,8 +43,6 @@ steps:
         - chmod +x ./startup.sh
         - ./startup.sh
 
-
-
 volumes:
   - name: maven-repo
     host:
