@@ -321,15 +321,14 @@ public class MemoService {
         ZoneId zoneId = ZoneId.systemDefault();
 
         StatisticsResponse statisticsResponse = new StatisticsResponse();
-        YearMonth myYearMonth = YearMonth.now();
 
         if (request.getBegin() == null) {
-            LocalDate firstDay = myYearMonth.atDay(1);
+            LocalDate firstDay = LocalDate.now().plusDays(-50);
             ZonedDateTime zdt = firstDay.atStartOfDay(zoneId);
             request.setBegin(Date.from(zdt.toInstant()));
         }
         if (request.getEnd() == null) {
-            LocalDate firstDay = myYearMonth.plusMonths(1).atDay(1);
+            LocalDate firstDay = LocalDate.now().plusDays(1);
             ZonedDateTime lastDayZdt = firstDay.atStartOfDay(zoneId);
             request.setEnd(Date.from(lastDayZdt.toInstant()));
         }
