@@ -3,6 +3,7 @@ package st.coo.memo.common;
 import cn.dev33.satoken.exception.NotLoginException;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
@@ -18,6 +19,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseDTO<Void> bizException(FileSizeLimitExceededException bizException) {
+        log.info("BizException : getActualSize:{} bytes => getPermittedSize:{} bytes", bizException.getActualSize(), bizException.getPermittedSize());
+        return ResponseDTO.fail(ResponseCode.file_size_limit_exceeded.getCode(),"上传失败,最大支持文件大小"+bizException.getPermittedSize()/1024/1024+"MB");
+    }
     @ExceptionHandler(BizException.class)
     public ResponseDTO<Void> bizException(BizException bizException) {
         log.info("BizException : {} => {}", bizException.getCode(), bizException.getMsg());
