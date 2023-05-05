@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import st.coo.memo.common.BizException;
+import st.coo.memo.common.LoginType;
 import st.coo.memo.common.ResponseCode;
 import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.user.*;
@@ -99,7 +100,7 @@ public class UserService {
         }
 
         LoginResponse response = new LoginResponse();
-        StpUtil.login(user.getId());
+        StpUtil.login(user.getId(), LoginType.WEB.name());
         response.setUsername(loginRequest.getUsername());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         response.setToken(tokenInfo.getTokenValue());

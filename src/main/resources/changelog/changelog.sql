@@ -113,3 +113,12 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('QINIU_PARAM', '{}
 alter table t_tag drop primary key;
 alter table t_tag add column id int primary key auto_increment;
 alter table t_tag add unique index tag_IDX (user_id,name);
+
+-- changeset jerry:11
+create table t_dev_token(
+    id int primary key auto_increment,
+    name varchar(20) unique not null ,
+    token varchar(120) not null,
+    expired datetime not null,
+    token_type varchar(20) not null
+);
