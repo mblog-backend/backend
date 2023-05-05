@@ -118,7 +118,5 @@ alter table t_tag add unique index tag_IDX (user_id,name);
 create table t_dev_token(
     id int primary key auto_increment,
     name varchar(20) unique not null ,
-    token varchar(120) not null,
-    expired datetime not null,
-    token_type varchar(20) not null
+    token varchar(120) not null
 );
