@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import st.coo.memo.service.SysConfigService;
 
@@ -21,14 +22,23 @@ public class CorsFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         log.info("启动跨域过滤器");
     }
+
     @Resource
     private SysConfigService sysConfigService;
+
+    @Value("${safe.domain:}")
+    private String safeDomain;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) resp;
 
         String domains = sysConfigService.getString(SysConfigConstant.CORS_DOMAIN_LIST);
+        if (StringUtils.isEmpty(domains)) {
+            domains = safeDomain;
+        } else {
+            domains = domains + "," + safeDomain;
+        }
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String origin = httpServletRequest.getHeader("Origin");
         if (StringUtils.isNotEmpty(domains) &&
