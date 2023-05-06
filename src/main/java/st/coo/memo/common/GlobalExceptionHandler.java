@@ -53,6 +53,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseDTO<Void> methodArgumentNotValidExceptionHandler(IllegalArgumentException ex) {
+        log.error("",ex);
         return ResponseDTO.fail(ResponseCode.param_error.getCode(), ex.getMessage());
     }
 

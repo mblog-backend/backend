@@ -58,6 +58,7 @@ public class UserController {
     }
 
     @PostMapping("/logout")
+    @SaCheckLogin
     public ResponseDTO<Void> logout() {
         userService.logout();
         return ResponseDTO.success();

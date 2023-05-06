@@ -23,7 +23,7 @@ import static st.coo.memo.entity.table.Tables.T_DEV_TOKEN;
 @Component
 public class DevTokenService {
 
-    private final static long apiExpiredSeconds = 100 * 365*24*60*60;
+    private final static long apiExpiredSeconds = 100L * 365 * 24 * 60 * 60;
 
     @Resource
     private DevTokenMapperExt devTokenMapperExt;
@@ -41,19 +41,22 @@ public class DevTokenService {
         if (token == null) {
             throw new BizException(ResponseCode.fail, "token不存在");
         }
-        StpUtil.logout(1, LoginType.API.name());
-        StpUtil.login(1,new SaLoginModel().setDevice(LoginType.API.name()).setTimeout(apiExpiredSeconds));
+        StpUtil.login(1, new SaLoginModel().setDevice(LoginType.API.name()).setTimeout(apiExpiredSeconds));
         TDevToken newToken = new TDevToken();
         newToken.setToken(StpUtil.getTokenInfo().getTokenValue());
         devTokenMapperExt.updateByCondition(newToken, QueryCondition.create(T_DEV_TOKEN.ID, 1));
     }
 
 
-    @PostConstruct
-    public void init() {
+    public void enable() {
         TDevToken token = devTokenMapperExt.selectOneByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default"));
         if (token == null) {
-            StpUtil.login(1,new SaLoginModel().setDevice(LoginType.API.name()).setTimeout(apiExpiredSeconds));
+            StpUtil.login(1, new SaLoginModel()
+                    .setDevice(LoginType.API.name())
+                    .setTimeout(apiExpiredSeconds)
+                    .setIsWriteHeader(false)
+                    .setIsLastingCookie(false)
+            );
             token = new TDevToken();
             token.setToken(StpUtil.getTokenInfo().getTokenValue());
             token.setName("default");

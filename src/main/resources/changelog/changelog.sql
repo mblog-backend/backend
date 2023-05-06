@@ -120,3 +120,5 @@ create table t_dev_token(
     name varchar(20) unique not null ,
     token varchar(120) not null
 );
+-- changeset jerry:12
+alter table t_dev_token modify token varchar(512);

@@ -1,5 +1,6 @@
 package st.coo.memo.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/token")
+@SaCheckRole("ADMIN")
 public class DevTokenController {
 
     @Resource
@@ -28,5 +30,9 @@ public class DevTokenController {
         devTokenService.reset();
         return ResponseDTO.success();
     }
-
+    @PostMapping("/enable")
+    public ResponseDTO<Void> enable(){
+        devTokenService.enable();
+        return ResponseDTO.success();
+    }
 }
