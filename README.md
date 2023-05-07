@@ -35,6 +35,7 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 #### 服务端
 - [Springboot](https://spring.io/)
 - [Mybatis-Flex](https://mybatis-flex.com/)
+- [SaToken](https://sa-token.cc/index.html)
 
 #### 前端
 - [Vue3](https://cn.vuejs.org/)
@@ -53,20 +54,20 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 ##### Docker安装
 ```
-docker run --volume=./upload:/opt/mblog/upload \
+docker run --volume=${PWD}/upload:/opt/mblog/upload \
 --publish=38321:38321 \
 --restart=always \
 --name=mblog-backend \
 --detach=true \
---env MYSQL_USER=数据库用户名
---env MYSQL_PASS=数据库密码
---env MYSQL_URL=数据库地址:端口
---env MYSQL_DB=数据库名称
---env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的)
+--env MYSQL_USER=数据库用户名 \
+--env MYSQL_PASS=数据库密码 \
+--env MYSQL_URL=数据库地址:端口 \
+--env MYSQL_DB=数据库名称 \
+--env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的) \
 kingwrcy/mblog-backend:latest
 ```
 
-- 其中`--volume=./upload:/opt/mblog/upload`是图片在本地存储才需要挂载的,如果是七牛云之类的,不需要挂载.
+- 其中`--volume=${PWD}/upload:/opt/mblog/upload`是图片在本地存储才需要挂载的,如果是七牛云之类的,不需要挂载.
 - 数据库相关的记得更改
 - 映射的端口自己需要就改
 - 其中`MBLOG_FRONT_DOMAIN`如果前后端域名+端口全部一致,可以不用配置,如果不一致,哪怕端口不一致,也需要配置,如:`https://mblog-front.com`

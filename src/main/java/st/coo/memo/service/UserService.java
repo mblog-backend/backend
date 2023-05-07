@@ -1,7 +1,6 @@
 package st.coo.memo.service;
 
 import cn.dev33.satoken.secure.BCrypt;
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.mybatisflex.core.query.QueryWrapper;
