@@ -56,14 +56,14 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 docker run --volume=./upload:/opt/mblog/upload \
 --publish=38321:38321 \
 --restart=always \
---name=mblog-server \
+--name=mblog-backend \
 --detach=true \
 --env MYSQL_USER=数据库用户名
 --env MYSQL_PASS=数据库密码
 --env MYSQL_URL=数据库地址:端口
 --env MYSQL_DB=数据库名称
 --env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的)
-192.168.2.33:47382/kingwrcy/mblog-server:latest
+kingwrcy/mblog-backend:latest
 ```
 
 - 其中`--volume=./upload:/opt/mblog/upload`是图片在本地存储才需要挂载的,如果是七牛云之类的,不需要挂载.
@@ -83,8 +83,8 @@ docker run --volume=./upload:/opt/mblog/upload \
 docker run
 --publish=80:80 \
 --restart=always \
---name=mblog-server\
+--name=mblog-front\
 --detach=true \
 --env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口
-192.168.2.33:47382/kingwrcy/mblog-front:latest
+kingwrcy/mblog-front:latest
 ```
