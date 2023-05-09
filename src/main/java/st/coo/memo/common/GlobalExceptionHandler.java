@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -58,7 +59,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
+//    public ResponseEntity<ResponseDTO<Void>> defaultExceptionHandler(DuplicateKeyException ex) {
     public ResponseDTO<Void> defaultExceptionHandler(DuplicateKeyException ex) {
         return ResponseDTO.fail(ResponseCode.param_error.getCode(), "数据已存在");
+//        return ResponseEntity.status(500).body(ResponseDTO.fail(ResponseCode.param_error.getCode(), "数据已存在"));
     }
 }

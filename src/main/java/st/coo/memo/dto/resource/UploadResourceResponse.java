@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class UploadResourceResponse {
     private String publicId;
-    private String externalPath;
+    private String url;
 }

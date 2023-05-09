@@ -120,7 +120,7 @@ public class MemoService {
         }
         tMemo.setContent(replaceFirstLine(content, tags).trim());
 
-        List<TTag> existsTagList = tags.size() == 0 ? Lists.newArrayList() :tagMapper.selectListByQuery(QueryWrapper.create().
+        List<TTag> existsTagList = tags.size() == 0 ? Lists.newArrayList() : tagMapper.selectListByQuery(QueryWrapper.create().
                 and(T_TAG.NAME.in(tags)).
                 and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt())));
 
@@ -252,6 +252,7 @@ public class MemoService {
         } else {
             wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
         }
+        wrapper.and(T_MEMO.CREATED.between(listMemoRequest.getBegin(), listMemoRequest.getEnd()).when(listMemoRequest.getBegin() != null && listMemoRequest.getEnd() != null));
         wrapper.orderBy("created desc");
         return wrapList(listMemoRequest, wrapper);
     }

@@ -5,6 +5,7 @@ import st.coo.memo.common.MemoStatus;
 import st.coo.memo.common.Visibility;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -14,5 +15,7 @@ public class ListMemoRequest {
     private String tag;
     private Visibility visibility;
     private int userId;
+    private Date begin;
+    private Date end;
 
 }
