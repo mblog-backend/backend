@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import st.coo.memo.dto.tag.SaveTagRequest;
 import st.coo.memo.dto.tag.TagDto;
 import st.coo.memo.dto.tag.TagUpdateDto;
 import st.coo.memo.entity.TMemo;
@@ -52,8 +53,8 @@ public class TagService {
     }
 
     @Transactional
-    public void save(List<TagUpdateDto> list) {
-        for (TagUpdateDto dto : list) {
+    public void save(SaveTagRequest request) {
+        for (TagUpdateDto dto : request.getList()) {
             TTag tag = new TTag();
             tag.setName(dto.getName());
 

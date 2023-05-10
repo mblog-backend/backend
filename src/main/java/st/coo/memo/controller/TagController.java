@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import st.coo.memo.common.ResponseDTO;
+import st.coo.memo.dto.tag.SaveTagRequest;
 import st.coo.memo.dto.tag.TagDto;
 import st.coo.memo.dto.tag.TagUpdateDto;
 import st.coo.memo.entity.TTag;
@@ -40,8 +41,8 @@ public class TagController {
 
     @PostMapping("/save")
     @SaCheckRole("ADMIN")
-    public ResponseDTO<Void> save(@RequestBody List<TagUpdateDto> list) {
-        tagService.save(list);
+    public ResponseDTO<Void> save(@RequestBody SaveTagRequest request) {
+        tagService.save(request);
         return ResponseDTO.success();
     }
 
