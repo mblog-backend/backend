@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import st.coo.memo.common.ResponseDTO;
 import st.coo.memo.dto.tag.SaveTagRequest;
 import st.coo.memo.dto.tag.TagDto;
-import st.coo.memo.dto.tag.TagUpdateDto;
-import st.coo.memo.entity.TTag;
 import st.coo.memo.service.TagService;
 
 import java.util.List;

@@ -2,12 +2,13 @@ package st.coo.memo.service;
 
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import com.google.common.collect.Lists;
 import com.mybatisflex.core.query.QueryCondition;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import st.coo.memo.common.BizException;
 import st.coo.memo.common.LoginType;
 import st.coo.memo.common.ResponseCode;
@@ -28,23 +29,24 @@ public class DevTokenService {
     @Resource
     private DevTokenMapperExt devTokenMapperExt;
 
-    public List<TokenDto> list() {
-        return devTokenMapperExt.selectAll().stream().map(r -> {
+    public TokenDto get() {
+        List<TokenDto> list = devTokenMapperExt.selectAll().stream().map(r -> {
             TokenDto dto = new TokenDto();
             BeanUtils.copyProperties(r, dto);
             return dto;
         }).toList();
+        return CollectionUtils.isEmpty(list) ?null : list.get(0);
     }
 
-    public void reset() {
-        TDevToken token = devTokenMapperExt.selectOneById(1);
+    public void reset(int id) {
+        TDevToken token = devTokenMapperExt.selectOneById(id);
         if (token == null) {
             throw new BizException(ResponseCode.fail, "token不存在");
         }
         StpUtil.login(1, new SaLoginModel().setDevice(LoginType.API.name()).setTimeout(apiExpiredSeconds));
         TDevToken newToken = new TDevToken();
         newToken.setToken(StpUtil.getTokenInfo().getTokenValue());
-        devTokenMapperExt.updateByCondition(newToken, QueryCondition.create(T_DEV_TOKEN.ID, 1));
+        devTokenMapperExt.updateByCondition(newToken, QueryCondition.create(T_DEV_TOKEN.ID, id));
     }
 
 
@@ -62,5 +64,9 @@ public class DevTokenService {
             token.setName("default");
             devTokenMapperExt.insertSelective(token);
         }
+    }
+
+    public void disable() {
+        devTokenMapperExt.deleteByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default"));
     }
 }
