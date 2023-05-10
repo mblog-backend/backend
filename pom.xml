@@ -15,7 +15,7 @@
     <description>memo</description>
     <properties>
         <java.version>17</java.version>
-        <mybatis.flex.version>1.2.0</mybatis.flex.version>
+        <mybatis.flex.version>1.2.1</mybatis.flex.version>
     </properties>
     <dependencies>
         <dependency>
@@ -64,13 +64,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-core</artifactId>
-            <version>${mybatis.flex.version}</version>
+            <artifactId>mybatis-flex-processor</artifactId>
+            <version>1.2.2</version>
+            <scope>provided</scope>
         </dependency>
-
 
         <dependency>
             <groupId>com.google.guava</groupId>
