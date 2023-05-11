@@ -63,6 +63,10 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 - [Unocss](https://github.com/unocss/unocss)
 - [NaiveUI](https://www.naiveui.com/zh-CN/light)
 
+### 微信交流群
+
+![](https://images.kingwrcy.cn/blog/20230511204418.png)
+
 ## 部署
 
 #### 服务端
