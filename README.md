@@ -12,27 +12,30 @@
 ## 项目介绍
 mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微博,可单用户使用,也可以支持多用户.
 
-1. [前端代码-github](https://github.com/kingwrcy/mblog-front)
-2. [前端代码-gitee](https://gitee.com/kingwrcy/mblog-front)
-3. [前端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-front)
+[DEMO](https://mblog.coo.st)
+
+
+![](https://images.kingwrcy.cn/blog/20230511134058.png)
+- [前端代码-github](https://github.com/kingwrcy/mblog-front)
+- [前端代码-gitee](https://gitee.com/kingwrcy/mblog-front)
+- [前端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-front)
 
 -----------------------------------
 
-
-1. [后端代码-github](https://github.com/kingwrcy/mblog-backend)
-2. [后端代码-gitee](https://gitee.com/kingwrcy/mblog-backend)
-3. [后端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-backend)
+- [后端代码-github](https://github.com/kingwrcy/mblog-backend)
+- [后端代码-gitee](https://gitee.com/kingwrcy/mblog-backend)
+- [后端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-backend)
 
 大体功能如下:
 - 基本的文字/图片输入,支持标签
 - 支持对历史博文/标签修改
-- 支持多用户,支持开启/关闭注册
+- 支持单/多用户,支持开启/关闭注册
 - 支持博文 登录用户/所有人/只有自己 可见
 - 支持按照标签,作者等条件搜索
 - 支持标签管理(**一键改标签**,删除无用标签等)
 - 支持上传图片(目前支持本地文件存储和七牛云,后续继续添加阿里云/腾讯云等)
 - 支持开发者使用api token
-- 响应式设计,支持pc和手机
+- 响应式设计,支持pc和手机,支持夜间模式
 - 支持RSS
 - 支持markdown语法
 - 支持emoji表情
@@ -60,6 +63,8 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 #### 服务端
 
 ***数据库记得提前建好,对应的账号得有create table的权限***
+
+
 ***数据库记得提前建好,对应的账号得有create table的权限***
 
 

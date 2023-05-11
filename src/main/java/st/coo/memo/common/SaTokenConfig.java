@@ -26,7 +26,6 @@ public class SaTokenConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，打开注解式鉴权功能
         registry.addInterceptor(new SaInterceptor(auth -> {
-            log.info("isLogin:{},StpUtil.getLoginType():{}",StpUtil.isLogin(),StpUtil.getLoginType());
             if (StpUtil.isLogin() && Objects.equals(StpUtil.getLoginDevice(), LoginType.API.name())) {
 
                 long count = Db.selectCountByQuery("t_dev_token", QueryWrapper.create().and(T_DEV_TOKEN.TOKEN.eq(StpUtil.getTokenValue())));
