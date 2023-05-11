@@ -3,7 +3,7 @@ type: docker
 name: mblog-backend
 trigger:
   branch:
-    - main
+    - prod
   event:
     - push
 

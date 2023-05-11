@@ -9,4 +9,5 @@ public class UpdateUserRequest {
     private String email;
     private String bio;
     private String avatarUrl;
+    private String password;
 }

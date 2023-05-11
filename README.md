@@ -15,7 +15,12 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 [DEMO](https://mblog.coo.st)
 
 
-![](https://images.kingwrcy.cn/blog/20230511134058.png)
+![](https://images.kingwrcy.cn/blog/20230511175950.png)
+
+![](https://images.kingwrcy.cn/blog/20230511180318.png)
+
+![](https://images.kingwrcy.cn/blog/20230511180602.png)
+
 - [前端代码-github](https://github.com/kingwrcy/mblog-front)
 - [前端代码-gitee](https://gitee.com/kingwrcy/mblog-front)
 - [前端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-front)
@@ -64,8 +69,10 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 ***数据库记得提前建好,对应的账号得有create table的权限***
 
-
 ***数据库记得提前建好,对应的账号得有create table的权限***
+
+初始用户名密码是***admin/a123456***
+登录成功后可以在 用户设置 页面修改密码.
 
 
 ##### 源码安装
@@ -103,7 +110,7 @@ kingwrcy/mblog-backend:latest
 
 ##### Docker安装
 ```
-docker run
+docker run \
 --publish=80:80 \
 --restart=always \
 --name=mblog-front\

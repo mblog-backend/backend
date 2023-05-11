@@ -54,6 +54,9 @@ public class UserService {
         TUser user = new TUser();
         user.setId(StpUtil.getLoginIdAsInt());
         BeanUtils.copyProperties(updateUserRequest, user);
+        if (StringUtils.isNotEmpty(updateUserRequest.getPassword())){
+            user.setPasswordHash(BCrypt.hashpw(updateUserRequest.getPassword()));
+        }
         userMapper.update(user, true);
     }
 
@@ -105,6 +108,7 @@ public class UserService {
         response.setUsername(loginRequest.getUsername());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         response.setToken(tokenInfo.getTokenValue());
+        response.setRole(user.getRole());
         return response;
     }
 
