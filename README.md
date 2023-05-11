@@ -85,6 +85,8 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 - 其中服务端域名是在生成RSS内容,和本地上传文件时启用.
 
+- 写内容时,只有**第一行的 以 `#` 开头**的才会被解析为 标签,第二行以及后面的,不解析. 
+
 
 ##### 源码安装
 1. `git clone git@github.com:kingwrcy/mblog-backend.git`

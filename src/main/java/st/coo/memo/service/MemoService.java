@@ -108,7 +108,14 @@ public class MemoService {
         return Joiner.on("\n").join(lines);
     }
 
+    private void checkContentAndResource(String content,List<String> resourceId){
+        if (!StringUtils.hasText(content) && CollectionUtils.isEmpty(resourceId)){
+            throw new BizException(ResponseCode.fail,"内容和图片都为空");
+        }
+    }
+
     public void save(SaveMemoRequest saveMemoRequest) {
+        checkContentAndResource(saveMemoRequest.getContent(), saveMemoRequest.getPublicIds());
         List<String> tags = parseTags(saveMemoRequest.getContent());
         String content = saveMemoRequest.getContent();
         TMemo tMemo = new TMemo();
@@ -154,6 +161,7 @@ public class MemoService {
 
 
     public void update(SaveMemoRequest updateMemoRequest) {
+        checkContentAndResource(updateMemoRequest.getContent(), updateMemoRequest.getPublicIds());
         TMemo existMemo = memoMapper.selectOneById(updateMemoRequest.getId());
         if (existMemo == null) {
             throw new BizException(ResponseCode.fail, "memo不存在");
@@ -216,6 +224,9 @@ public class MemoService {
     }
 
     private List<String> parseTags(String content) {
+        if (!StringUtils.hasText(content)){
+            return Lists.newArrayList();
+        }
         List<String> list = SPLITTER.splitToList(content);
         if (CollectionUtils.isEmpty(list)) {
             return Lists.newArrayList();
