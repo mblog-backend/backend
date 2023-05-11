@@ -123,6 +123,8 @@ public class ResourceService implements ApplicationContextAware {
         if (Objects.equals(tResource.getStorageType(),StorageType.LOCAL.name())){
             String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
             uploadResourceResponse.setUrl(domain+url);
+        }else{
+            uploadResourceResponse.setUrl(url);
         }
 
         return uploadResourceResponse;
