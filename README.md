@@ -12,6 +12,17 @@
 ## 项目介绍
 mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微博,可单用户使用,也可以支持多用户.
 
+1. [前端代码-github](https://github.com/kingwrcy/mblog-front)
+2. [前端代码-gitee](https://gitee.com/kingwrcy/mblog-front)
+3. [前端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-front)
+
+-----------------------------------
+
+
+1. [后端代码-github](https://github.com/kingwrcy/mblog-backend)
+2. [后端代码-gitee](https://gitee.com/kingwrcy/mblog-backend)
+3. [后端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-backend)
+
 大体功能如下:
 - 基本的文字/图片输入,支持标签
 - 支持对历史博文/标签修改
@@ -20,10 +31,11 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 - 支持按照标签,作者等条件搜索
 - 支持标签管理(**一键改标签**,删除无用标签等)
 - 支持上传图片(目前支持本地文件存储和七牛云,后续继续添加阿里云/腾讯云等)
-- 支持开发者使用api token写blog
+- 支持开发者使用api token
 - 响应式设计,支持pc和手机
 - 支持RSS
 - 支持markdown语法
+- 支持emoji表情
 - 前后端分离,前端和后端域名可以不一致,可以后端部署在nas上,前端部署在cdn.
 
 ## 待开发的功能
@@ -41,13 +53,18 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 - [Vue3](https://cn.vuejs.org/)
 - [Vite](https://cn.vitejs.dev/)
 - [Unocss](https://github.com/unocss/unocss)
-- [DevUI](https://vue-devui.github.io/)
+- [NaiveUI](https://www.naiveui.com/zh-CN/light)
 
 ## 部署
 
 #### 服务端
+
+***数据库记得提前建好,对应的账号得有create table的权限***
+***数据库记得提前建好,对应的账号得有create table的权限***
+
+
 ##### 源码安装
-1. `git clone `
+1. `git clone git@github.com:kingwrcy/mblog-backend.git`
 2. 更改`application.properties`文件中的数据库相关信息和前端域名(配置跨域)
 3. 在项目根目录下执行`mvn clean package`，需要java>=17和maven>=3.9.1
 4. 打包出来的Jar文件在服务器执行`java -jar xxx.jar`
@@ -70,13 +87,13 @@ kingwrcy/mblog-backend:latest
 - 其中`--volume=${PWD}/upload:/opt/mblog/upload`是图片在本地存储才需要挂载的,如果是七牛云之类的,不需要挂载.
 - 数据库相关的记得更改
 - 映射的端口自己需要就改
-- 其中`MBLOG_FRONT_DOMAIN`如果前后端域名+端口全部一致,可以不用配置,如果不一致,哪怕端口不一致,也需要配置,如:`https://mblog-front.com`
+- 其中`MBLOG_FRONT_DOMAIN`如果**前后端域名+端口全部一致,可以不用配置,如果不一致,哪怕端口不一致,也需要配置**,如:`https://mblog-front.com`
 
 #### 前端安装
 ##### 源码安装
-1. `git clone `
-2. 更改`.env.production`文件中的`VITE_BASE_URL`内容为你的服务端地址,有端口的端口也要加上,如:`https://mblog-server.com:2023`
-3. `pnpm i && pnpm run build` 需要Node版本>=v16.16.0
+1. `git clone git@github.com:kingwrcy/mblog-front.git`
+2. 更改`.env.docker`文件中的`VITE_BASE_URL`内容为你的服务端地址,有端口的端口也要加上,如:`https://mblog-server.com:2023`
+3. `yarn i && yarn build-only --mode=docker` 需要Node版本>=v18
 4. 打包出来的dist目录就可以传到cdn了
 
 ##### Docker安装
@@ -86,6 +103,6 @@ docker run
 --restart=always \
 --name=mblog-front\
 --detach=true \
---env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口
+--env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口 \
 kingwrcy/mblog-front:latest
 ```
