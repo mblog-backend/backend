@@ -19,6 +19,7 @@ steps:
   - name: docker build
     image: plugins/docker
     settings:
+      mirror: https://mm0rc4mq.mirror.aliyuncs.com
       registry: 192.168.2.33:47382
       insecure: true
       repo: 192.168.2.33:47382/kingwrcy/mblog-backend

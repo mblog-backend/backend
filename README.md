@@ -12,7 +12,9 @@
 ## 项目介绍
 mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微博,可单用户使用,也可以支持多用户.
 
-[DEMO](https://mblog.coo.st)
+[mblog.coo.st](https://mblog.coo.st)
+
+[cooolr.online(开放注册)](https://cooolr.online/)
 
 <details><summary>图片预览</summary>
 

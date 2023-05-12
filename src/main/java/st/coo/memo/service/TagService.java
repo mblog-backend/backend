@@ -35,7 +35,7 @@ public class TagService {
     }
 
     public List<TagDto> top10Tags() {
-        List<TTag> rows = tagMapper.selectListByQuery(QueryWrapper.create()
+        List<TTag> rows = tagMapper.selectListByQuery(QueryWrapper.create().and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt()))
                 .orderBy("memo_count desc").limit(10));
         return rows.stream().map(this::convertToDto).toList();
     }
@@ -54,12 +54,13 @@ public class TagService {
 
     @Transactional
     public void save(SaveTagRequest request) {
+        int userId = StpUtil.getLoginIdAsInt();
         for (TagUpdateDto dto : request.getList()) {
             TTag tag = new TTag();
             tag.setName(dto.getName());
 
             TTag oldTag = tagMapper.selectOneById(dto.getId());
-            int row = tagMapper.updateByQuery(tag, true, QueryWrapper.create().and(T_TAG.ID.eq(dto.getId())));
+            int row = tagMapper.updateByQuery(tag, true, QueryWrapper.create().and(T_TAG.USER_ID.eq(userId).and(T_TAG.ID.eq(dto.getId()))));
             Assert.isTrue(row == 1,"更新tag异常");
 
             List<TMemo> memos = memoMapperExt.selectListByQuery(QueryWrapper.create().and(T_MEMO.TAGS.like(oldTag.getName() + ",")));
