@@ -8,24 +8,42 @@ services:
       - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 8GfCHJbnPCiAquNP
-      MYSQL_DATABASE: yoyo
-      MYSQL_USER: yoyo
+      MYSQL_DATABASE: mblog
+      MYSQL_USER: mblog
       MYSQL_PASSWORD: FeZ3DVjdFMAdzJmu
+    expose:
+      - 3306
     networks:
       - backend
 
-  yoyo-server:
-    image: kingwrcy/yoyo:0.0.1
-    container_name: yoyo
+  mblog-backend:
+    image: kingwrcy/mblog-backend
+    container_name: mblog-backend
     restart: always
     volumes:
-      - yoyo_data:/opt/memo/upload
-      - ./application.properties:/app/application.properties
+      - mblog-backend-data:/opt/mblog/upload
+    environment:
+      MYSQL_USER: mblog
+      MYSQL_PASS: FeZ3DVjdFMAdzJmu
+      MYSQL_URL: mysql:3306
+      MYSQL_DB: mblog
+      MBLOG_FRONT_DOMAIN: 这里改成你的前端域名,带http(s)和端口(有的话)
     depends_on:
       - mysql
     links:
       - mysql
-    expose:
-      - 38321
+    ports:
+      - "38321:38321"
+    networks:
+      - backend
+
+  mblog-front:
+    image: kingwrcy/mblog-front
+    container_name: mblog-front
+    restart: always
+    environment:
+      MBLOG_SERVER_URL: 这里改成你的服务端域名,带http(s)和端口(有的话)
+    ports:
+      - "80:80"
     networks:
       - backend

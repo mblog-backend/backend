@@ -14,6 +14,7 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 [DEMO](https://mblog.coo.st)
 
+<details><summary>图片预览</summary>
 
 ![](https://images.kingwrcy.cn/blog/20230511175950.png)
 
@@ -21,6 +22,10 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 ![](https://images.kingwrcy.cn/blog/20230511180602.png)
 
+</details>
+
+
+<details><summary>Docker镜像</summary>
 - [前端代码-github](https://github.com/kingwrcy/mblog-front)
 - [前端代码-gitee](https://gitee.com/kingwrcy/mblog-front)
 - [前端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-front)
@@ -30,6 +35,7 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 - [后端代码-github](https://github.com/kingwrcy/mblog-backend)
 - [后端代码-gitee](https://gitee.com/kingwrcy/mblog-backend)
 - [后端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-backend)
+</details>
 
 大体功能如下:
 - 基本的文字/图片输入,支持标签
@@ -85,7 +91,9 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 - 其中服务端域名是在生成RSS内容,和本地上传文件时启用.
 
-- 写内容时,只有**第一行的 以 `#` 开头**的才会被解析为 标签,第二行以及后面的,不解析. 
+- 写内容时,只有**第一行的 以 `#` 开头**的才会被解析为 标签,第二行以及后面的,不解析.
+
+- AllInOne 安装可以参看 `根目录下的docker-compose.yml`,里面包含了前端,后端和MySQL 8.
 
 
 ##### 源码安装
