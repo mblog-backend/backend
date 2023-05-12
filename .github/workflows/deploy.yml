@@ -1,0 +1,55 @@
+name: deploy Docker image
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  maven-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B clean package --file pom.xml
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Version
+        id: version_step
+        run: |
+          echo "##[set-output name=version;]VERSION=${GITHUB_REF#$"refs/tags/v"}"
+          echo "##[set-output name=version_tag;]$GITHUB_REPOSITORY:${GITHUB_REF#$"refs/tags/v"}"
+          echo "##[set-output name=latest_tag;]$GITHUB_REPOSITORY:latest"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER_NAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: PrepareReg Names
+        id: read-docker-image-identifiers
+        run: |
+          echo VERSION_TAG=$(echo ${{ steps.version_step.outputs.version_tag }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+          echo LASTEST_TAG=$(echo ${{ steps.version_step.outputs.latest_tag  }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
+      - name: Build and push Docker images
+        id: docker_build
+        uses: docker/build-push-action@v2.3.0
+        with:
+          push: true
+          tags: |
+            ${{env.VERSION_TAG}}
+            ${{env.LASTEST_TAG}}
+          build-args: |
+            ${{steps.version_step.outputs.version}}
