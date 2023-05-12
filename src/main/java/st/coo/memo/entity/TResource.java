@@ -46,6 +46,9 @@ public class TResource implements Serializable {
     
     private Timestamp updated;
 
+    
+    private String suffix;
+
     public String getPublicId() {
         return publicId;
     }
@@ -140,6 +143,14 @@ public class TResource implements Serializable {
 
     public void setUpdated(Timestamp updated) {
         this.updated = updated;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 
 }

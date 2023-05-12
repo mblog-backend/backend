@@ -36,5 +36,6 @@ public class MemoDto {
         private String publicId;
         private String url;
         private String fileType;
+        private String suffix;
     }
 }

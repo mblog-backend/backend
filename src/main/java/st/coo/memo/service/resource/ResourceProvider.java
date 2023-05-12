@@ -1,8 +1,7 @@
 package st.coo.memo.service.resource;
 
-import st.coo.memo.common.StorageType;
+import st.coo.memo.dto.resource.UploadResourceResponse;
 
 public interface ResourceProvider {
-    StorageType type();
-    String upload(String filePath);
+    UploadResourceResponse upload(String filePath, String publicId);
 }

@@ -122,3 +122,6 @@ create table t_dev_token(
 );
 -- changeset jerry:12
 alter table t_dev_token modify token varchar(512);
+
+-- changeset jerry:13
+alter table t_resource add column suffix varchar(100) null;

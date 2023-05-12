@@ -3,7 +3,6 @@ package st.coo.memo.service.resource;
 import cn.hutool.core.io.file.FileNameUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
@@ -17,8 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import st.coo.memo.common.BizException;
 import st.coo.memo.common.ResponseCode;
-import st.coo.memo.common.StorageType;
 import st.coo.memo.common.SysConfigConstant;
+import st.coo.memo.dto.resource.UploadResourceResponse;
 import st.coo.memo.service.SysConfigService;
 
 import java.util.Map;
@@ -31,15 +30,9 @@ public class QiNiuResourceProvider implements ResourceProvider {
     private SysConfigService sysConfigService;
 
 
-    @Override
-    public StorageType type() {
-        return StorageType.QINIU;
-    }
-
 
     @Override
-    public String upload(String filePath) {
-        String publicId = FileNameUtil.getPrefix(filePath);
+    public UploadResourceResponse upload(String filePath, String publicId) {
         String param = sysConfigService.getString(SysConfigConstant.QINIU_PARAM);
         Map<String, String> map = new Gson().fromJson(param, new TypeToken<Map<String, String>>() {
         }.getType());
@@ -48,6 +41,7 @@ public class QiNiuResourceProvider implements ResourceProvider {
         String bucket = MapUtils.getString(map, "bucket");
         String domain = MapUtils.getString(map, "domain");
         String prefix = MapUtils.getString(map, "prefix");
+        String suffix = MapUtils.getString(map, "suffix");
 
         if (StringUtils.isEmpty(accessKey) || StringUtils.isEmpty(secretKey) || StringUtils.isEmpty(bucket) || StringUtils.isEmpty(domain)) {
             throw new BizException(ResponseCode.fail, "七牛云相关参数没有设置");
@@ -74,6 +68,10 @@ public class QiNiuResourceProvider implements ResourceProvider {
             throw new BizException(ResponseCode.fail, "上传资源失败");
         }
 
-        return domain + "/" + key;
+        UploadResourceResponse uploadResourceResponse = new UploadResourceResponse();
+        uploadResourceResponse.setUrl(domain+"/"+key);
+        uploadResourceResponse.setSuffix(suffix);
+        uploadResourceResponse.setPublicId(publicId);
+        return uploadResourceResponse;
     }
 }

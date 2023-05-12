@@ -321,6 +321,7 @@ public class MemoService {
             } else {
                 item.setUrl(r.getExternalLink());
             }
+            item.setSuffix(r.getSuffix());
             item.setPublicId(r.getPublicId());
             item.setFileType(r.getFileType());
             return item;

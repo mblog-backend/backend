@@ -77,56 +77,42 @@ public class ResourceService implements ApplicationContextAware {
     }
 
     private UploadResourceResponse upload(MultipartFile multipartFile, StorageType storageType, ResourceProvider provider) {
-        String publicId = RandomStringUtils.randomAlphabetic(20);
+        String publicId = DateFormatUtils.format(new Date(),"YYYMMDDHHmmss")+RandomStringUtils.randomAlphabetic(20);
         String originalFilename = multipartFile.getOriginalFilename();
         String fileName = publicId + "." + FileNameUtil.getSuffix(originalFilename);
         String parentDir = DateFormatUtils.format(new Date(), "yyyyMMdd");
         String targetPath = tempPath + File.separator + parentDir + File.separator + fileName;
-        byte[] content = null;
-        String fileType = "";
-        String fileHash = "";
+        byte[] content;
+        String fileType;
         try {
             FileUtil.mkParentDirs(targetPath);
             content = multipartFile.getBytes();
-            fileHash = DigestUtils.md5DigestAsHex(content);
-            TResource existResource = resourceMapper.selectOneByQuery(QueryWrapper.create().and(T_RESOURCE.FILE_HASH.eq(fileHash)));
             FileOutputStream target = new FileOutputStream(targetPath);
-            if (existResource == null) {
-                FileCopyUtils.copy(multipartFile.getInputStream(), target);
-                fileType = Files.probeContentType(new File(targetPath).toPath());
-            } else {
-                targetPath = existResource.getInternalPath();
-                fileType = existResource.getFileType();
-            }
-
+            FileCopyUtils.copy(multipartFile.getInputStream(), target);
+            fileType = Files.probeContentType(new File(targetPath).toPath());
         } catch (Exception e) {
             log.error("upload resource error", e);
             throw new BizException(ResponseCode.fail, "上传文件异常:" + e.getLocalizedMessage());
         }
-        String url = provider.upload(targetPath);
+        UploadResourceResponse uploadResourceResponse = provider.upload(targetPath,publicId);
 
         TResource tResource = new TResource();
         tResource.setPublicId(publicId);
         tResource.setFileType(fileType);
         tResource.setFileName(originalFilename);
+        tResource.setSuffix(uploadResourceResponse.getSuffix());
         tResource.setFileHash(DigestUtils.md5DigestAsHex(content));
         tResource.setSize(multipartFile.getSize());
         tResource.setMemoId(0);
         tResource.setInternalPath(targetPath);
-        tResource.setExternalLink(url);
+        tResource.setExternalLink(uploadResourceResponse.getUrl());
         tResource.setStorageType(storageType.name());
         tResource.setUserId(StpUtil.getLoginIdAsInt());
         resourceMapper.insertSelective(tResource);
-
-        UploadResourceResponse uploadResourceResponse = new UploadResourceResponse();
-        uploadResourceResponse.setPublicId(publicId);
-        if (Objects.equals(tResource.getStorageType(),StorageType.LOCAL.name())){
+        if (Objects.equals(storageType.name(),StorageType.LOCAL.name())){
             String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
-            uploadResourceResponse.setUrl(domain+url);
-        }else{
-            uploadResourceResponse.setUrl(url);
+            uploadResourceResponse.setUrl(domain+uploadResourceResponse.getUrl());
         }
-
         return uploadResourceResponse;
     }
 
