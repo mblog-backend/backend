@@ -4,7 +4,7 @@ on:
     tags:
       - "v*"
 jobs:
-  maven-build:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,10 +16,6 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
-
-  docker-build:
-    runs-on: ubuntu-latest
-    steps:
       - name: Extract Version
         id: version_step
         run: |
