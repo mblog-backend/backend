@@ -71,6 +71,9 @@ public class MemoService {
         if (tMemo == null) {
             return;
         }
+        if (!Objects.equals(tMemo.getUserId(),StpUtil.getLoginIdAsInt())){
+            throw new BizException(ResponseCode.fail,"不能删除其他人的记录");
+        }
         if (StringUtils.hasText(tMemo.getTags())) {
             List<String> tags = Splitter.on(",").splitToList(tMemo.getTags());
             for (String tag : tags) {
@@ -81,11 +84,18 @@ public class MemoService {
         memoMapper.deleteById(id);
     }
 
-    public void setMemoTop(int id) {
-        TMemo tMemo = new TMemo();
-        tMemo.setId(id);
-        tMemo.setTop("Y");
-        memoMapper.update(tMemo, true);
+    public void setMemoTop(int id, String top) {
+        TMemo tMemo = memoMapper.selectOneById(id);
+        if (tMemo == null) {
+            return;
+        }
+        if (!Objects.equals(tMemo.getUserId(),StpUtil.getLoginIdAsInt())){
+            throw new BizException(ResponseCode.fail,"不能操作其他人的记录");
+        }
+        TMemo newMemo = new TMemo();
+        newMemo.setId(id);
+        newMemo.setTop(top);
+        memoMapper.update(newMemo, true);
     }
 
     private String replaceFirstLine(String content, List<String> tags) {
@@ -119,7 +129,7 @@ public class MemoService {
         List<String> tags = parseTags(saveMemoRequest.getContent());
         String content = saveMemoRequest.getContent();
         TMemo tMemo = new TMemo();
-        tMemo.setTop(BooleanUtils.toString(saveMemoRequest.isTop(), "Y", "N"));
+        tMemo.setTop("N");
         tMemo.setUserId(StpUtil.getLoginIdAsInt());
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         if (saveMemoRequest.getVisibility() != null) {
@@ -172,7 +182,7 @@ public class MemoService {
         TMemo tMemo = new TMemo();
         tMemo.setId(existMemo.getId());
         List<String> tags = parseTags(updateMemoRequest.getContent());
-        tMemo.setTop(BooleanUtils.toString(updateMemoRequest.isTop(), "Y", "N"));
+        tMemo.setTop(updateMemoRequest.getTop());
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         tMemo.setContent(replaceFirstLine(content, tags).trim());
         if (updateMemoRequest.getVisibility() != null) {
@@ -264,7 +274,7 @@ public class MemoService {
             wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
         }
         wrapper.and(T_MEMO.CREATED.between(listMemoRequest.getBegin(), listMemoRequest.getEnd()).when(listMemoRequest.getBegin() != null && listMemoRequest.getEnd() != null));
-        wrapper.orderBy("created desc");
+        wrapper.orderBy("top desc,created desc");
         return wrapList(listMemoRequest, wrapper);
     }
 
@@ -311,7 +321,6 @@ public class MemoService {
         tMemo.setAuthorRole(user.getRole());
         tMemo.setEmail(user.getEmail());
         tMemo.setBio(user.getBio());
-        tMemo.setAuthorId(user.getId());
         String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
         List<TResource> resources = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
         tMemo.setResources(resources.stream().map(r -> {
