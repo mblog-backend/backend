@@ -31,7 +31,8 @@ public class TagService {
     private MemoMapperExt memoMapperExt;
 
     public List<TagDto> list() {
-        return tagMapper.selectAll().stream().map(this::convertToDto).toList();
+        int loginUserId = StpUtil.getLoginIdAsInt();
+        return tagMapper.selectListByQuery(QueryWrapper.create().and(T_TAG.USER_ID.eq(loginUserId))).stream().map(this::convertToDto).toList();
     }
 
     public List<TagDto> top10Tags() {

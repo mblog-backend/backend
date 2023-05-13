@@ -131,12 +131,21 @@ kingwrcy/mblog-backend:latest
 3. `yarn i && yarn build-only --mode=docker` 需要Node版本>=v18
 4. 打包出来的dist目录就可以传到cdn了
 
+***自己部署前端的注意事项***
+
+由于使用了vue-router的 [HTML5 Mode](https://router.vuejs.org/guide/essentials/history-mode.html),所以需要在服务器的nginx上写入一条配置.
+详情参见[HTML5 Mode](https://router.vuejs.org/guide/essentials/history-mode.html)
+
+如果不写的话,直接访问详情页,登录页等页面会404,站内跳转的不受影响.
+
+用Docker安装的不需要这个步骤,我已经在Dockerfile中处理过了.
+
 ##### Docker安装
 ```
 docker run \
 --publish=你要映射的前端端口:80 \
 --restart=always \
---name=mblog-front\
+--name=mblog-front \
 --detach=true \
 --env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口 \
 kingwrcy/mblog-front:latest

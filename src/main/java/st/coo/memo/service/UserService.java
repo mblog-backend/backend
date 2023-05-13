@@ -109,6 +109,7 @@ public class UserService {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         response.setToken(tokenInfo.getTokenValue());
         response.setRole(user.getRole());
+        response.setUserId(user.getId());
         return response;
     }
 

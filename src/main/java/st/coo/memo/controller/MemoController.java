@@ -38,6 +38,13 @@ public class MemoController {
         return ResponseDTO.success();
     }
 
+    @PostMapping("/setTop")
+    @SaCheckLogin
+    public ResponseDTO<Void> setTop(@RequestParam("id") int id,@RequestParam("top") String top) {
+        memoService.setMemoTop(id,top);
+        return ResponseDTO.success();
+    }
+
     @PostMapping("/{id}")
     public ResponseDTO<MemoDto> get(@PathVariable("id") int id) {
         return ResponseDTO.success(memoService.get(id));

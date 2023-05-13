@@ -27,7 +27,7 @@ public class MemoDto {
     private String authorRole;
     private String email;
     private String bio;
-    private Integer authorId;
+    private String top;
 
     private List<ResourceItem>resources;
 
