@@ -5,10 +5,9 @@ import lombok.Data;
 @Data
 public class ResourceDto {
     private String publicId;
+    private String url;
     private String fileType;
-    private String fileName;
-    private String fileHash;
-    private long fileSize;
-    private String internalPath;
+    private String suffix;
+    private String storageType;
 
 }

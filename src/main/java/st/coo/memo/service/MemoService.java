@@ -4,13 +4,13 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.row.Db;
 import com.mybatisflex.core.row.Row;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import st.coo.memo.common.*;
 import st.coo.memo.dto.memo.*;
+import st.coo.memo.dto.resource.ResourceDto;
 import st.coo.memo.entity.TMemo;
 import st.coo.memo.entity.TResource;
 import st.coo.memo.entity.TTag;
@@ -71,8 +72,8 @@ public class MemoService {
         if (tMemo == null) {
             return;
         }
-        if (!Objects.equals(tMemo.getUserId(),StpUtil.getLoginIdAsInt())){
-            throw new BizException(ResponseCode.fail,"不能删除其他人的记录");
+        if (!Objects.equals(tMemo.getUserId(), StpUtil.getLoginIdAsInt())) {
+            throw new BizException(ResponseCode.fail, "不能删除其他人的记录");
         }
         if (StringUtils.hasText(tMemo.getTags())) {
             List<String> tags = Splitter.on(",").splitToList(tMemo.getTags());
@@ -84,18 +85,20 @@ public class MemoService {
         memoMapper.deleteById(id);
     }
 
-    public void setMemoTop(int id, String top) {
+    public void setMemoPriority(int id, boolean set) {
         TMemo tMemo = memoMapper.selectOneById(id);
         if (tMemo == null) {
             return;
         }
-        if (!Objects.equals(tMemo.getUserId(),StpUtil.getLoginIdAsInt())){
-            throw new BizException(ResponseCode.fail,"不能操作其他人的记录");
+        if (!StpUtil.getRoleList().contains("ADMIN") && !Objects.equals(tMemo.getUserId(), StpUtil.getLoginIdAsInt())) {
+            throw new BizException(ResponseCode.fail, "不能操作其他人的记录");
         }
-        TMemo newMemo = new TMemo();
-        newMemo.setId(id);
-        newMemo.setTop(top);
-        memoMapper.update(newMemo, true);
+        if (set) {
+            memoMapper.setPriority(id);
+        } else {
+            memoMapper.unSetPriority(id);
+        }
+
     }
 
     private String replaceFirstLine(String content, List<String> tags) {
@@ -118,9 +121,9 @@ public class MemoService {
         return Joiner.on("\n").join(lines);
     }
 
-    private void checkContentAndResource(String content,List<String> resourceId){
-        if (!StringUtils.hasText(content) && CollectionUtils.isEmpty(resourceId)){
-            throw new BizException(ResponseCode.fail,"内容和图片都为空");
+    private void checkContentAndResource(String content, List<String> resourceId) {
+        if (!StringUtils.hasText(content) && CollectionUtils.isEmpty(resourceId)) {
+            throw new BizException(ResponseCode.fail, "内容和图片都为空");
         }
     }
 
@@ -129,7 +132,6 @@ public class MemoService {
         List<String> tags = parseTags(saveMemoRequest.getContent());
         String content = saveMemoRequest.getContent();
         TMemo tMemo = new TMemo();
-        tMemo.setTop("N");
         tMemo.setUserId(StpUtil.getLoginIdAsInt());
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         if (saveMemoRequest.getVisibility() != null) {
@@ -182,7 +184,7 @@ public class MemoService {
         TMemo tMemo = new TMemo();
         tMemo.setId(existMemo.getId());
         List<String> tags = parseTags(updateMemoRequest.getContent());
-        tMemo.setTop(updateMemoRequest.getTop());
+        tMemo.setPriority(updateMemoRequest.getPriority());
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         tMemo.setContent(replaceFirstLine(content, tags).trim());
         if (updateMemoRequest.getVisibility() != null) {
@@ -234,7 +236,7 @@ public class MemoService {
     }
 
     private List<String> parseTags(String content) {
-        if (!StringUtils.hasText(content)){
+        if (!StringUtils.hasText(content)) {
             return Lists.newArrayList();
         }
         List<String> list = SPLITTER.splitToList(content);
@@ -254,37 +256,52 @@ public class MemoService {
     @Transactional
     public ListMemoResponse listNormal(ListMemoRequest listMemoRequest) {
         boolean isLogin = StpUtil.isLogin();
-        QueryWrapper wrapper = QueryWrapper.create();
-        if (StringUtils.hasText(listMemoRequest.getTag())) {
-            listMemoRequest.setTag(listMemoRequest.getTag() + ",");
-        } else {
-            listMemoRequest.setTag(null);
-        }
-        wrapper.and(T_MEMO.STATUS.eq(MemoStatus.NORMAL.name()).and(
-                T_MEMO.TAGS.like(listMemoRequest.getTag())).and(T_MEMO.USER_ID.eq(listMemoRequest.getUserId()).when(listMemoRequest.getUserId() > 0)));
-        if (listMemoRequest.getVisibility() != null) {
-            wrapper.and(T_MEMO.VISIBILITY.eq(listMemoRequest.getVisibility().name()));
-        }
-
+        listMemoRequest.setLogin(isLogin);
         if (isLogin) {
-            wrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name()))
-                    .or(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()).and(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE.name())))
-            );
-        } else {
-            wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
+            listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
-        wrapper.and(T_MEMO.CREATED.between(listMemoRequest.getBegin(), listMemoRequest.getEnd()).when(listMemoRequest.getBegin() != null && listMemoRequest.getEnd() != null));
-        wrapper.orderBy("top desc,created desc");
-        return wrapList(listMemoRequest, wrapper);
-    }
-
-    public ListMemoResponse listArchived(ListMemoRequest listMemoRequest) {
-        QueryWrapper wrapper = QueryWrapper.create()
-                .and(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()))
-                .and(T_MEMO.STATUS.eq(MemoStatus.ARCHIVED.name()))
-                .and(T_MEMO.TAGS.like(listMemoRequest.getTag() + ","));
-        wrapper.orderBy("created desc");
-        return wrapList(listMemoRequest, wrapper);
+        log.info(new Gson().toJson(listMemoRequest));
+        long total = memoMapper.countMemos(listMemoRequest);
+        List<MemoDto> list = Lists.newArrayList();
+        if (total > 0) {
+            list = memoMapper.listMemos(listMemoRequest);
+        }
+        ListMemoResponse response = new ListMemoResponse();
+        response.setTotal(total);
+        response.setItems(list);
+        response.setTotalPage(total % listMemoRequest.getSize() == 0 ? total / listMemoRequest.getSize() : total / listMemoRequest.getSize() + 1);
+        return response;
+//        QueryWrapper wrapper = QueryWrapper.create();
+//        if (StringUtils.hasText(listMemoRequest.getTag())) {
+//            listMemoRequest.setTag(listMemoRequest.getTag() + ",");
+//        } else {
+//            listMemoRequest.setTag(null);
+//        }
+//        wrapper.and(T_MEMO.STATUS.eq(MemoStatus.NORMAL.name()).and(
+//                T_MEMO.TAGS.like(listMemoRequest.getTag())).and(T_MEMO.USER_ID.eq(listMemoRequest.getUserId()).when(listMemoRequest.getUserId() > 0)));
+//        if (listMemoRequest.getVisibility() != null) {
+//            wrapper.and(T_MEMO.VISIBILITY.eq(listMemoRequest.getVisibility().name()));
+//        }
+//
+//        if (isLogin) {
+//            wrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name()))
+//                    .or(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()).and(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE.name())))
+//            );
+//        } else {
+//            wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
+//        }
+//        wrapper.and(T_MEMO.CREATED.between(listMemoRequest.getBegin(), listMemoRequest.getEnd()).when(listMemoRequest.getBegin() != null && listMemoRequest.getEnd() != null));
+//        wrapper.orderBy("top desc,created desc");
+//        return wrapList(listMemoRequest, wrapper);
+//    }
+//
+//    public ListMemoResponse listArchived(ListMemoRequest listMemoRequest) {
+//        QueryWrapper wrapper = QueryWrapper.create()
+//                .and(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()))
+//                .and(T_MEMO.STATUS.eq(MemoStatus.ARCHIVED.name()))
+//                .and(T_MEMO.TAGS.like(listMemoRequest.getTag() + ","));
+//        wrapper.orderBy("created desc");
+//        return wrapList(listMemoRequest, wrapper);
     }
 
     private ListMemoResponse wrapList(ListMemoRequest listMemoRequest, QueryWrapper wrapper) {
@@ -314,6 +331,7 @@ public class MemoService {
         if (memo == null) {
             return null;
         }
+
         MemoDto tMemo = new MemoDto();
         BeanUtils.copyProperties(memo, tMemo);
         TUser user = userMapper.selectOneById(memo.getUserId());
@@ -324,7 +342,7 @@ public class MemoService {
         String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
         List<TResource> resources = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
         tMemo.setResources(resources.stream().map(r -> {
-            MemoDto.ResourceItem item = new MemoDto.ResourceItem();
+            ResourceDto item = new ResourceDto();
             if (Objects.equals(r.getStorageType(), StorageType.LOCAL.name())) {
                 item.setUrl(domain + r.getExternalLink());
             } else {

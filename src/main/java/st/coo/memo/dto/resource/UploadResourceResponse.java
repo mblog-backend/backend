@@ -7,4 +7,5 @@ public class UploadResourceResponse {
     private String publicId;
     private String url;
     private String suffix;
+    private String storageType;
 }

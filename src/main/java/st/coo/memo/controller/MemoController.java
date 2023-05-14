@@ -38,10 +38,10 @@ public class MemoController {
         return ResponseDTO.success();
     }
 
-    @PostMapping("/setTop")
+    @PostMapping("/setPriority")
     @SaCheckLogin
-    public ResponseDTO<Void> setTop(@RequestParam("id") int id,@RequestParam("top") String top) {
-        memoService.setMemoTop(id,top);
+    public ResponseDTO<Void> setTop(@RequestParam("id") int id,boolean set) {
+        memoService.setMemoPriority(id,set);
         return ResponseDTO.success();
     }
 
@@ -55,11 +55,11 @@ public class MemoController {
         return ResponseDTO.success(memoService.listNormal(listMemoRequest));
     }
 
-    @PostMapping("/listArchived")
-    @SaCheckLogin
-    public ResponseDTO<ListMemoResponse> listArchived(@RequestBody @Validated ListMemoRequest listMemoRequest) {
-        return ResponseDTO.success(memoService.listArchived(listMemoRequest));
-    }
+//    @PostMapping("/listArchived")
+//    @SaCheckLogin
+//    public ResponseDTO<ListMemoResponse> listArchived(@RequestBody @Validated ListMemoRequest listMemoRequest) {
+//        return ResponseDTO.success(memoService.listArchived(listMemoRequest));
+//    }
 
 
     @PostMapping("/statistics")

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="st.coo.memo.mapper.MemoMapperExt">
+    <resultMap id="MemoDtoMap" type="st.coo.memo.dto.memo.MemoDto" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="created" property="created" jdbcType="TIMESTAMP" />
+        <result column="updated" property="updated" jdbcType="TIMESTAMP" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="priority" property="priority" jdbcType="INTEGER" />
+        <result column="visibility" property="visibility" jdbcType="VARCHAR" />
+        <result column="tags" property="tags" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="userId" property="userId" jdbcType="INTEGER" />
+        <result column="authorName" property="authorName" jdbcType="VARCHAR" />
+        <result column="authorRole" property="authorRole" jdbcType="VARCHAR" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="bio" property="bio" jdbcType="VARCHAR" />
+        <collection property="resources" ofType="st.coo.memo.dto.resource.ResourceDto">
+            <result column="publicId" property="publicId" jdbcType="VARCHAR" />
+            <result column="url" property="url" jdbcType="VARCHAR" />
+            <result column="suffix" property="suffix" jdbcType="VARCHAR" />
+            <result column="fileType" property="fileType" jdbcType="VARCHAR" />
+            <result column="storageType" property="storageType" jdbcType="VARCHAR" />
+        </collection>
+    </resultMap>
+
+    <update id="setPriority">
+        update t_memo t set t.priority = ((select max(x.priority) from (select * from t_memo)as x)+1) where t.id = #{id}
+    </update>
+
+    <update id="unSetPriority">
+        update t_memo t set t.priority = 0 where t.id = #{id}
+    </update>
+
+    <sql id="listMemoWhere">
+        where t.status = 'NORMAL'
+        <if test="begin != null and end != null">
+            and t.created between #{begin} and #{end}
+        </if>
+        <if test="login == true">
+            and (
+            t.visibility in ('PUBLIC','PROTECT')
+            or t.visibility = 'PRIVATE' and t.user_id = #{currentUserId}
+            )
+            <if test="userId != null and userId > 0">
+                and t.user_id = #{userId}
+            </if>
+        </if>
+        <if test="login == false">
+            and t.visibility = 'PUBLIC'
+        </if>
+        <if test="tag != null">
+            and t.tags like concat('%',#{tag},',%')
+        </if>
+        <if test="visibility != null">
+            and t.visibility = #{visibility}
+        </if>
+    </sql>
+
+    <select id="listMemos" resultMap="MemoDtoMap">
+        select
+            t.id,t.created,t.updated,t.content,t.priority,t.visibility,t.tags,t.status,t.user_id as userId,
+            u.display_name as authorName,u.role as authorRole,u.email,u.bio,
+            r.external_link as url,r.public_id as publicId,r.suffix,r.file_type as fileType,r.storage_type as storageType
+            from t_memo t
+            left join t_user u on u.id = t.user_id
+            left join t_resource r on r.memo_id = t.id
+       <include refid="listMemoWhere"/>
+        order by t.priority desc, t.created desc limit ${(page - 1) * size},#{size}
+    </select>
+
+    <select id="countMemos" resultType="Long">
+        select count(1)
+        from t_memo t
+        <include refid="listMemoWhere"/>
+    </select>
+
+</mapper>

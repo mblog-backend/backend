@@ -125,3 +125,7 @@ alter table t_dev_token modify token varchar(512);
 
 -- changeset jerry:13
 alter table t_resource add column suffix varchar(100) null;
+
+-- changeset jerry:14
+alter table t_memo drop column top ;
+alter table t_memo add column priority int default 0;

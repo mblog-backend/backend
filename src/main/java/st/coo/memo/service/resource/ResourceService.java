@@ -5,7 +5,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
-import st.coo.memo.common.*;
+import st.coo.memo.common.BizException;
+import st.coo.memo.common.ResponseCode;
+import st.coo.memo.common.StorageType;
+import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.resource.UploadResourceResponse;
-import st.coo.memo.entity.TMemo;
 import st.coo.memo.entity.TResource;
 import st.coo.memo.mapper.MemoMapperExt;
 import st.coo.memo.mapper.ResourceMapperExt;
@@ -36,9 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static st.coo.memo.entity.table.Tables.T_MEMO;
-import static st.coo.memo.entity.table.Tables.T_RESOURCE;
 
 @Slf4j
 @Component
@@ -109,10 +107,7 @@ public class ResourceService implements ApplicationContextAware {
         tResource.setStorageType(storageType.name());
         tResource.setUserId(StpUtil.getLoginIdAsInt());
         resourceMapper.insertSelective(tResource);
-        if (Objects.equals(storageType.name(),StorageType.LOCAL.name())){
-            String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
-            uploadResourceResponse.setUrl(domain+uploadResourceResponse.getUrl());
-        }
+        uploadResourceResponse.setStorageType(storageType.name());
         return uploadResourceResponse;
     }
 

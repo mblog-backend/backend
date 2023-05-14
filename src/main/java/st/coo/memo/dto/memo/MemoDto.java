@@ -1,6 +1,7 @@
 package st.coo.memo.dto.memo;
 
 import lombok.Data;
+import st.coo.memo.dto.resource.ResourceDto;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -27,15 +28,9 @@ public class MemoDto {
     private String authorRole;
     private String email;
     private String bio;
-    private String top;
+    private int priority;
 
-    private List<ResourceItem>resources;
+    private List<ResourceDto>resources;
 
-    @Data
-    public static class ResourceItem{
-        private String publicId;
-        private String url;
-        private String fileType;
-        private String suffix;
-    }
+
 }

@@ -36,7 +36,7 @@ public class TMemo implements Serializable {
     private Timestamp updated;
 
     
-    private String top;
+    private Integer priority;
 
     public Integer getId() {
         return id;
@@ -102,12 +102,12 @@ public class TMemo implements Serializable {
         this.updated = updated;
     }
 
-    public String getTop() {
-        return top;
+    public Integer getPriority() {
+        return priority;
     }
 
-    public void setTop(String top) {
-        this.top = top;
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 
 }

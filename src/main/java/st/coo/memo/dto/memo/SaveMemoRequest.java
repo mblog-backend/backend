@@ -11,5 +11,5 @@ public class SaveMemoRequest {
     private String content;
     private List<String> publicIds;
     private Visibility visibility;
-    private String top;
+    private Integer priority;
 }

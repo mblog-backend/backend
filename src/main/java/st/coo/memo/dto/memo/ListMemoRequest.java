@@ -15,7 +15,9 @@ public class ListMemoRequest {
     private String tag;
     private Visibility visibility;
     private int userId;
+    private int currentUserId;
     private Date begin;
     private Date end;
+    private boolean login;
 
 }
