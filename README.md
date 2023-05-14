@@ -12,6 +12,9 @@
 ## 项目介绍
 mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微博,可单用户使用,也可以支持多用户.
 
+
+DEMO:
+
 [mblog.coo.st](https://mblog.coo.st)
 
 [cooolr.online(开放注册)](https://cooolr.online/)
@@ -28,14 +31,13 @@ mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微�
 
 
 <details><summary>Docker镜像</summary>
-- [前端代码-github](https://github.com/kingwrcy/mblog-front)
-- [前端代码-gitee](https://gitee.com/kingwrcy/mblog-front)
+
+- [前端代码](https://github.com/kingwrcy/mblog-front)
 - [前端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-front)
 
 -----------------------------------
 
-- [后端代码-github](https://github.com/kingwrcy/mblog-backend)
-- [后端代码-gitee](https://gitee.com/kingwrcy/mblog-backend)
+- [后端代码](https://github.com/kingwrcy/mblog-backend)
 - [后端Docker镜像](https://hub.docker.com/r/kingwrcy/mblog-backend)
 </details>
 
