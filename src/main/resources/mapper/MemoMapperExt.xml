@@ -50,6 +50,9 @@
         </if>
         <if test="login == false">
             and t.visibility = 'PUBLIC'
+            <if test="userId != null and userId > 0">
+                and t.user_id = #{userId}
+            </if>
         </if>
         <if test="tag != null">
             and t.tags like concat('%',#{tag},',%')
