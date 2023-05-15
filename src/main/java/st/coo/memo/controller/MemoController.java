@@ -63,7 +63,6 @@ public class MemoController {
 
 
     @PostMapping("/statistics")
-    @SaCheckLogin
     public ResponseDTO<StatisticsResponse> statistics(@RequestBody @Validated StatisticsRequest statisticsRequest) {
         return ResponseDTO.success(memoService.statistics(statisticsRequest));
     }

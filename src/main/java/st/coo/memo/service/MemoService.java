@@ -260,7 +260,7 @@ public class MemoService {
         if (isLogin) {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
-        log.info(new Gson().toJson(listMemoRequest));
+        log.debug(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
         if (total > 0) {
@@ -271,46 +271,6 @@ public class MemoService {
         response.setItems(list);
         response.setTotalPage(total % listMemoRequest.getSize() == 0 ? total / listMemoRequest.getSize() : total / listMemoRequest.getSize() + 1);
         return response;
-//        QueryWrapper wrapper = QueryWrapper.create();
-//        if (StringUtils.hasText(listMemoRequest.getTag())) {
-//            listMemoRequest.setTag(listMemoRequest.getTag() + ",");
-//        } else {
-//            listMemoRequest.setTag(null);
-//        }
-//        wrapper.and(T_MEMO.STATUS.eq(MemoStatus.NORMAL.name()).and(
-//                T_MEMO.TAGS.like(listMemoRequest.getTag())).and(T_MEMO.USER_ID.eq(listMemoRequest.getUserId()).when(listMemoRequest.getUserId() > 0)));
-//        if (listMemoRequest.getVisibility() != null) {
-//            wrapper.and(T_MEMO.VISIBILITY.eq(listMemoRequest.getVisibility().name()));
-//        }
-//
-//        if (isLogin) {
-//            wrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name(), Visibility.PROTECT.name()))
-//                    .or(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()).and(T_MEMO.VISIBILITY.eq(Visibility.PRIVATE.name())))
-//            );
-//        } else {
-//            wrapper.and(T_MEMO.VISIBILITY.eq(Visibility.PUBLIC.name()));
-//        }
-//        wrapper.and(T_MEMO.CREATED.between(listMemoRequest.getBegin(), listMemoRequest.getEnd()).when(listMemoRequest.getBegin() != null && listMemoRequest.getEnd() != null));
-//        wrapper.orderBy("top desc,created desc");
-//        return wrapList(listMemoRequest, wrapper);
-//    }
-//
-//    public ListMemoResponse listArchived(ListMemoRequest listMemoRequest) {
-//        QueryWrapper wrapper = QueryWrapper.create()
-//                .and(T_MEMO.USER_ID.eq(StpUtil.getLoginIdAsInt()))
-//                .and(T_MEMO.STATUS.eq(MemoStatus.ARCHIVED.name()))
-//                .and(T_MEMO.TAGS.like(listMemoRequest.getTag() + ","));
-//        wrapper.orderBy("created desc");
-//        return wrapList(listMemoRequest, wrapper);
-    }
-
-    private ListMemoResponse wrapList(ListMemoRequest listMemoRequest, QueryWrapper wrapper) {
-        Page<TMemo> page = memoMapper.paginate(listMemoRequest.getPage(), listMemoRequest.getSize(), wrapper);
-        ListMemoResponse listMemoResponse = new ListMemoResponse();
-        listMemoResponse.setTotal(page.getTotalRow());
-        listMemoResponse.setTotalPage(page.getTotalPage());
-        listMemoResponse.setItems(page.getRecords().stream().map(this::convertToDto).collect(Collectors.toList()));
-        return listMemoResponse;
     }
 
 
@@ -373,12 +333,17 @@ public class MemoService {
             request.setEnd(Date.from(lastDayZdt.toInstant()));
         }
 
-
-        int loginId = StpUtil.getLoginIdAsInt();
-        TUser user = userMapper.selectOneById(loginId);
-        long totalMemos = memoMapper.selectCountByQuery(QueryWrapper.create().and(T_MEMO.USER_ID.eq(loginId)));
+        int userId ;
+        if (StpUtil.isLogin()){
+            userId = StpUtil.getLoginIdAsInt();
+        }else{
+            TUser admin = userMapper.selectOneByQuery(QueryWrapper.create().and(T_USER.ROLE.eq("ADMIN")));
+            userId = admin.getId();
+        }
+        TUser user = userMapper.selectOneById(userId);
+        long totalMemos = memoMapper.selectCountByQuery(QueryWrapper.create().and(T_MEMO.USER_ID.eq(userId)));
         long totalDays = Duration.between(user.getCreated().toLocalDateTime(), LocalDateTime.now()).toDays();
-        long totalTags = tagMapper.selectCountByQuery(QueryWrapper.create().and(T_TAG.USER_ID.eq(loginId)));
+        long totalTags = tagMapper.selectCountByQuery(QueryWrapper.create().and(T_TAG.USER_ID.eq(userId)));
 
         statisticsResponse.setTotalMemos(totalMemos);
         statisticsResponse.setTotalTags(totalTags);
@@ -386,7 +351,7 @@ public class MemoService {
 
         List<Row> rows = Db.selectListBySql("select date(created) as day,count(1) as count from t_memo where " +
                         "user_id = ? and created between ? and ? group by date(created) order by date(created) desc",
-                loginId, request.getBegin(), request.getEnd());
+                userId, request.getBegin(), request.getEnd());
         statisticsResponse.setItems(rows.stream().map(r -> {
             StatisticsResponse.Item item = new StatisticsResponse.Item();
             item.setDate(r.getString("day"));

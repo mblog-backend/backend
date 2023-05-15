@@ -1,6 +1,7 @@
 package st.coo.memo.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.mybatisflex.core.BaseMapper;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +14,14 @@ import st.coo.memo.dto.tag.TagDto;
 import st.coo.memo.dto.tag.TagUpdateDto;
 import st.coo.memo.entity.TMemo;
 import st.coo.memo.entity.TTag;
+import st.coo.memo.entity.TUser;
 import st.coo.memo.mapper.MemoMapperExt;
 import st.coo.memo.mapper.TagMapperExt;
+import st.coo.memo.mapper.UserMapperExt;
 
 import java.util.List;
 
-import static st.coo.memo.entity.table.Tables.T_MEMO;
-import static st.coo.memo.entity.table.Tables.T_TAG;
+import static st.coo.memo.entity.table.Tables.*;
 
 @Component
 @Slf4j
@@ -29,6 +31,9 @@ public class TagService {
     private TagMapperExt tagMapper;
     @Resource
     private MemoMapperExt memoMapperExt;
+    @Resource
+    private UserMapperExt userMapper;
+
 
     public List<TagDto> list() {
         int loginUserId = StpUtil.getLoginIdAsInt();
@@ -36,7 +41,14 @@ public class TagService {
     }
 
     public List<TagDto> top10Tags() {
-        List<TTag> rows = tagMapper.selectListByQuery(QueryWrapper.create().and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt()))
+        int userId ;
+        if (StpUtil.isLogin()){
+            userId = StpUtil.getLoginIdAsInt();
+        }else{
+            TUser admin = userMapper.selectOneByQuery(QueryWrapper.create().and(T_USER.ROLE.eq("ADMIN")));
+            userId = admin.getId();
+        }
+        List<TTag> rows = tagMapper.selectListByQuery(QueryWrapper.create().and(T_TAG.USER_ID.eq(userId))
                 .orderBy("memo_count desc").limit(10));
         return rows.stream().map(this::convertToDto).toList();
     }

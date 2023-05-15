@@ -40,7 +40,6 @@ public class UserController {
     }
 
     @PostMapping("/current")
-    @SaCheckLogin
     public ResponseDTO<UserDto> current() {
         return ResponseDTO.success(userService.current());
     }

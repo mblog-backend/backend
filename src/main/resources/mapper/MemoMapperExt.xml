@@ -60,15 +60,32 @@
     </sql>
 
     <select id="listMemos" resultMap="MemoDtoMap">
-        select
-            t.id,t.created,t.updated,t.content,t.priority,t.visibility,t.tags,t.status,t.user_id as userId,
-            u.display_name as authorName,u.role as authorRole,u.email,u.bio,
-            r.external_link as url,r.public_id as publicId,r.suffix,r.file_type as fileType,r.storage_type as storageType
-            from t_memo t
-            left join t_user u on u.id = t.user_id
-            left join t_resource r on r.memo_id = t.id
+        select x.*,u.display_name AS authorName,
+        u.role AS authorRole,
+        u.email,
+        u.bio,
+        r.external_link AS url,
+        r.public_id AS publicId,
+        r.suffix,
+        r.file_type AS fileType,
+        r.storage_type AS storageType from (
+        SELECT
+        t.id,
+        t.created,
+        t.updated,
+        t.content,
+        t.priority,
+        t.visibility,
+        t.tags,
+        t.status,
+        t.user_id AS userId
+        FROM
+        t_memo t
        <include refid="listMemoWhere"/>
-        order by t.priority desc, t.created desc limit ${(page - 1) * size},#{size}
+        order by t.priority desc, t.created desc limit ${(page - 1) * size},#{size} ) x LEFT JOIN t_user u ON
+        u.id = x.userId
+        LEFT JOIN t_resource r ON
+        r.memo_id = x.id
     </select>
 
     <select id="countMemos" resultType="Long">

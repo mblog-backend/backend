@@ -72,7 +72,12 @@ public class UserService {
     }
 
     public UserDto current() {
-        TUser user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());
+        TUser user;
+        if (StpUtil.isLogin()){
+            user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());
+        }else{
+            user = userMapper.selectOneByQuery(QueryWrapper.create().and(T_USER.ROLE.eq("ADMIN")));
+        }
         UserDto userDto = new UserDto();
         if (user == null) {
             return null;

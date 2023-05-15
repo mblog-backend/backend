@@ -25,7 +25,6 @@ public class TagController {
     }
 
     @PostMapping("/top10")
-    @SaCheckLogin
     public ResponseDTO<List<TagDto>> top10() {
         return ResponseDTO.success(tagService.top10Tags());
     }
