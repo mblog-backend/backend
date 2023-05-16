@@ -42,10 +42,13 @@ public class TMemo implements Serializable {
     private Integer commentCount;
 
     
-    private Integer favCount;
+    private Integer likeCount;
 
     
     private Integer enableComment;
+
+    
+    private Integer viewCount;
 
     public Integer getId() {
         return id;
@@ -127,12 +130,12 @@ public class TMemo implements Serializable {
         this.commentCount = commentCount;
     }
 
-    public Integer getFavCount() {
-        return favCount;
+    public Integer getLikeCount() {
+        return likeCount;
     }
 
-    public void setFavCount(Integer favCount) {
-        this.favCount = favCount;
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 
     public Integer getEnableComment() {
@@ -141,6 +144,14 @@ public class TMemo implements Serializable {
 
     public void setEnableComment(Integer enableComment) {
         this.enableComment = enableComment;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 
 }

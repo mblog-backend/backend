@@ -2,11 +2,10 @@ package st.coo.memo.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import st.coo.memo.common.ResponseDTO;
+import st.coo.memo.dto.comment.QueryCommentListRequest;
+import st.coo.memo.dto.comment.QueryCommentListResponse;
 import st.coo.memo.dto.comment.SaveCommentRequest;
 import st.coo.memo.service.CommentService;
 
@@ -24,4 +23,16 @@ public class CommentController {
         return ResponseDTO.success();
     }
 
+    @PostMapping("/remove")
+    @SaCheckLogin
+    public ResponseDTO<Void> remove(@RequestParam("id") int id) {
+        commentService.removeComment(id);
+        return ResponseDTO.success();
+    }
+
+
+    @PostMapping("/query")
+    public ResponseDTO<QueryCommentListResponse> query(@RequestBody QueryCommentListRequest request) {
+        return ResponseDTO.success(commentService.query(request));
+    }
 }

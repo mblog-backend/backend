@@ -29,6 +29,11 @@ public class MemoDto {
     private String email;
     private String bio;
     private int priority;
+    private int commentCount;
+    private int likeCount;
+    private int enableComment;
+    private int viewCount;
+    private int liked;
 
     private List<ResourceDto>resources;
 

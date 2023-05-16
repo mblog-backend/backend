@@ -55,15 +55,15 @@ public class MemoController {
         return ResponseDTO.success(memoService.listNormal(listMemoRequest));
     }
 
-//    @PostMapping("/listArchived")
-//    @SaCheckLogin
-//    public ResponseDTO<ListMemoResponse> listArchived(@RequestBody @Validated ListMemoRequest listMemoRequest) {
-//        return ResponseDTO.success(memoService.listArchived(listMemoRequest));
-//    }
-
-
     @PostMapping("/statistics")
     public ResponseDTO<StatisticsResponse> statistics(@RequestBody @Validated StatisticsRequest statisticsRequest) {
         return ResponseDTO.success(memoService.statistics(statisticsRequest));
+    }
+
+    @PostMapping("/relation")
+    @SaCheckLogin
+    public ResponseDTO<Void> relation(@RequestBody MemoRelationRequest request ){
+        memoService.makeRelation(request);
+        return ResponseDTO.success();
     }
 }

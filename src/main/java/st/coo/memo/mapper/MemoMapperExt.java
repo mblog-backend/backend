@@ -14,5 +14,8 @@ public interface MemoMapperExt extends BaseMapper<TMemo> {
     int setPriority(int id);
     int unSetPriority(int id);
     int addCommentCount(int id);
+    int addViewCount(int id);
+    int addLikeCount(int id);
+    int removeLikeCount(int id);
 
 }

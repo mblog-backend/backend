@@ -147,3 +147,17 @@ CREATE TABLE t_comment
 alter table t_memo add column comment_count int default 0;
 alter table t_memo add column fav_count int default 0;
 alter table t_memo add column enable_comment int default 0;
+
+-- changeset jerry:16
+alter table t_memo add column view_count int default 0;
+alter table t_user add unique  index T_USER_UNI1(display_name);
+create table t_user_memo_relation
+(
+    id      int primary key auto_increment,
+    memo_id int not null,
+    user_id int not null,
+    fav_type varchar(20) not null default 'LIKE',
+    created timestamp DEFAULT current_timestamp,
+    updated timestamp DEFAULT current_timestamp ON UPDATE current_timestamp
+);
+alter table t_memo change column fav_count like_count int default 0;

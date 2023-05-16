@@ -5,7 +5,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
-import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.row.Db;
 import com.mybatisflex.core.row.Row;
@@ -21,14 +20,8 @@ import org.springframework.util.StringUtils;
 import st.coo.memo.common.*;
 import st.coo.memo.dto.memo.*;
 import st.coo.memo.dto.resource.ResourceDto;
-import st.coo.memo.entity.TMemo;
-import st.coo.memo.entity.TResource;
-import st.coo.memo.entity.TTag;
-import st.coo.memo.entity.TUser;
-import st.coo.memo.mapper.MemoMapperExt;
-import st.coo.memo.mapper.ResourceMapperExt;
-import st.coo.memo.mapper.TagMapperExt;
-import st.coo.memo.mapper.UserMapperExt;
+import st.coo.memo.entity.*;
+import st.coo.memo.mapper.*;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -61,6 +54,8 @@ public class MemoService {
 
     @Resource
     private SysConfigService sysConfigService;
+    @Resource
+    private UserMemoRelationMapperExt userMemoRelationMapperExt;
 
     @Resource
     private TransactionTemplate transactionTemplate;
@@ -137,6 +132,7 @@ public class MemoService {
         if (saveMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(saveMemoRequest.getVisibility().name());
         }
+        tMemo.setEnableComment(saveMemoRequest.isEnableComment() ? 1 : 0);
         tMemo.setContent(replaceFirstLine(content, tags).trim());
 
         List<TTag> existsTagList = tags.size() == 0 ? Lists.newArrayList() : tagMapper.selectListByQuery(QueryWrapper.create().
@@ -187,6 +183,7 @@ public class MemoService {
         tMemo.setPriority(updateMemoRequest.getPriority());
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         tMemo.setContent(replaceFirstLine(content, tags).trim());
+        tMemo.setEnableComment(updateMemoRequest.isEnableComment() ? 1 : 0);
         if (updateMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(updateMemoRequest.getVisibility().name());
         }
@@ -284,6 +281,7 @@ public class MemoService {
             queryWrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name())));
         }
         TMemo tMemo = memoMapper.selectOneByQuery(queryWrapper);
+        memoMapper.addViewCount(id);
         return convertToDto(tMemo);
     }
 
@@ -333,10 +331,10 @@ public class MemoService {
             request.setEnd(Date.from(lastDayZdt.toInstant()));
         }
 
-        int userId ;
-        if (StpUtil.isLogin()){
+        int userId;
+        if (StpUtil.isLogin()) {
             userId = StpUtil.getLoginIdAsInt();
-        }else{
+        } else {
             TUser admin = userMapper.selectOneByQuery(QueryWrapper.create().and(T_USER.ROLE.eq("ADMIN")));
             userId = admin.getId();
         }
@@ -360,4 +358,31 @@ public class MemoService {
         }).collect(Collectors.toList()));
         return statisticsResponse;
     }
+
+
+    @Transactional
+    public void makeRelation(MemoRelationRequest request) {
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .and(T_USER_MEMO_RELATION.MEMO_ID.eq(request.getMemoId()))
+                .and(T_USER_MEMO_RELATION.USER_ID.eq(StpUtil.getLoginIdAsInt()))
+                .and(T_USER_MEMO_RELATION.FAV_TYPE.eq(request.getType()));
+
+        if (Objects.equals(request.getOperateType(), "ADD")) {
+            TUserMemoRelation relation = new TUserMemoRelation();
+            relation.setMemoId(request.getMemoId());
+            relation.setUserId(StpUtil.getLoginIdAsInt());
+            relation.setFavType(request.getType());
+            long count = userMemoRelationMapperExt.selectCountByQuery(queryWrapper);
+            if (count > 0) {
+                throw new BizException(ResponseCode.fail, "数据已存在");
+            }
+            Assert.isTrue(memoMapper.addLikeCount(request.getMemoId()) == 1, "更新like数量异常");
+            userMemoRelationMapperExt.insertSelective(relation);
+        } else if (Objects.equals(request.getOperateType(), "REMOVE")) {
+            Assert.isTrue(userMemoRelationMapperExt.deleteByQuery(queryWrapper) == 1, "删除like数据异常");
+            Assert.isTrue(memoMapper.removeLikeCount(request.getMemoId()) == 1, "更新like数量异常");
+        }
+    }
+
+
 }

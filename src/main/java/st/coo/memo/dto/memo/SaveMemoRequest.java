@@ -12,4 +12,5 @@ public class SaveMemoRequest {
     private List<String> publicIds;
     private Visibility visibility;
     private Integer priority;
+    private boolean enableComment;
 }

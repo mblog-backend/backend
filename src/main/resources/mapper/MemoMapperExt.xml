@@ -17,6 +17,11 @@
         <result column="authorRole" property="authorRole" jdbcType="VARCHAR" />
         <result column="email" property="email" jdbcType="VARCHAR" />
         <result column="bio" property="bio" jdbcType="VARCHAR" />
+        <result column="viewCount" property="viewCount" jdbcType="INTEGER" />
+        <result column="commentCount" property="commentCount" jdbcType="INTEGER" />
+        <result column="enableComment" property="enableComment" jdbcType="INTEGER" />
+        <result column="likeCount" property="likeCount" jdbcType="INTEGER" />
+        <result column="liked" property="liked" jdbcType="INTEGER" />
         <collection property="resources" ofType="st.coo.memo.dto.resource.ResourceDto">
             <result column="publicId" property="publicId" jdbcType="VARCHAR" />
             <result column="url" property="url" jdbcType="VARCHAR" />
@@ -37,6 +42,18 @@
 
     <update id="addCommentCount">
         update t_memo t set t.comment_count = t.comment_count+1 where t.id = #{id}
+    </update>
+
+    <update id="addViewCount">
+        update t_memo t set t.view_count = t.view_count+1 where t.id = #{id}
+    </update>
+
+    <update id="addLikeCount">
+        update t_memo t set t.like_count = t.like_count+1 where t.id = #{id}
+    </update>
+
+    <update id="removeLikeCount">
+        update t_memo t set t.like_count = t.like_count - 1 where t.id = #{id} and t.like_count >= 1
     </update>
 
     <sql id="listMemoWhere">
@@ -76,7 +93,11 @@
         r.public_id AS publicId,
         r.suffix,
         r.file_type AS fileType,
-        r.storage_type AS storageType from (
+        r.storage_type AS storageType
+        <if test="login == true">,
+        mr.id as liked
+        </if>
+        from (
         SELECT
         t.id,
         t.created,
@@ -86,7 +107,11 @@
         t.visibility,
         t.tags,
         t.status,
-        t.user_id AS userId
+        t.user_id AS userId,
+        t.view_count as viewCount,
+        t.enable_comment as enableComment,
+        t.like_count as likeCount,
+        t.comment_count as commentCount
         FROM
         t_memo t
        <include refid="listMemoWhere"/>
@@ -94,6 +119,9 @@
         u.id = x.userId
         LEFT JOIN t_resource r ON
         r.memo_id = x.id
+        <if test="login == true">
+            left join t_user_memo_relation mr on mr.memo_id = x.id and mr.user_id = #{currentUserId} and mr.fav_type = 'LIKE'
+        </if>
     </select>
 
     <select id="countMemos" resultType="Long">

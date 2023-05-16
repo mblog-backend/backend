@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import st.coo.memo.common.BizException;
 import st.coo.memo.common.LoginType;
@@ -47,7 +48,11 @@ public class UserService {
         user.setUsername(registerUserRequest.getUsername());
         user.setDisplayName(StringUtils.defaultString(registerUserRequest.getDisplayName(), registerUserRequest.getUsername()));
         user.setPasswordHash(BCrypt.hashpw(registerUserRequest.getPassword()));
-        userMapper.insertSelective(user);
+        try {
+            userMapper.insertSelective(user);
+        } catch (DuplicateKeyException e) {
+            throw new BizException(ResponseCode.fail, "用户名或昵称已存在");
+        }
     }
 
     public void update(UpdateUserRequest updateUserRequest) {
@@ -121,5 +126,9 @@ public class UserService {
 
     public void logout() {
         StpUtil.logout();
+    }
+
+    public List<String> listNames() {
+        return userMapper.selectAll().stream().map(TUser::getDisplayName).toList();
     }
 }

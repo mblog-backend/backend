@@ -62,4 +62,11 @@ public class UserController {
         userService.logout();
         return ResponseDTO.success();
     }
+
+    @PostMapping("/listNames")
+    @SaCheckLogin()
+    public ResponseDTO<List<String>> listNames() {
+        return ResponseDTO.success(userService.listNames());
+    }
+
 }
