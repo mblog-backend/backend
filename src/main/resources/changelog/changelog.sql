@@ -129,3 +129,21 @@ alter table t_resource add column suffix varchar(100) null;
 -- changeset jerry:14
 alter table t_memo drop column top ;
 alter table t_memo add column priority int default 0;
+
+
+-- changeset jerry:15
+CREATE TABLE t_comment
+(
+    id        int PRIMARY KEY AUTO_INCREMENT,
+    memo_id   int         NOT NULL,
+    content   text        NOT NULL,
+    user_id   int         not null,
+    user_name varchar(50) not null,
+    mentioned varchar(256),
+    created   timestamp DEFAULT current_timestamp,
+    updated   timestamp DEFAULT current_timestamp ON UPDATE current_timestamp
+);
+
+alter table t_memo add column comment_count int default 0;
+alter table t_memo add column fav_count int default 0;
+alter table t_memo add column enable_comment int default 0;

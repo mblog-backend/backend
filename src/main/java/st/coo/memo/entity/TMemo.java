@@ -38,6 +38,15 @@ public class TMemo implements Serializable {
     
     private Integer priority;
 
+    
+    private Integer commentCount;
+
+    
+    private Integer favCount;
+
+    
+    private Integer enableComment;
+
     public Integer getId() {
         return id;
     }
@@ -108,6 +117,30 @@ public class TMemo implements Serializable {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public Integer getFavCount() {
+        return favCount;
+    }
+
+    public void setFavCount(Integer favCount) {
+        this.favCount = favCount;
+    }
+
+    public Integer getEnableComment() {
+        return enableComment;
+    }
+
+    public void setEnableComment(Integer enableComment) {
+        this.enableComment = enableComment;
     }
 
 }

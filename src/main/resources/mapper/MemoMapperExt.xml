@@ -34,6 +34,11 @@
         update t_memo t set t.priority = 0 where t.id = #{id}
     </update>
 
+
+    <update id="addCommentCount">
+        update t_memo t set t.comment_count = t.comment_count+1 where t.id = #{id}
+    </update>
+
     <sql id="listMemoWhere">
         where t.status = 'NORMAL'
         <if test="begin != null and end != null">
