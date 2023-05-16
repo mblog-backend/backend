@@ -17,7 +17,7 @@ DEMO:
 
 [mblog.coo.st](https://mblog.coo.st)
 
-[cooolr.online(开放注册)](https://cooolr.online/)
+[mblog.cooolr.online(开放注册)](https://mblog.cooolr.online/)
 
 <details><summary>图片预览</summary>
 
