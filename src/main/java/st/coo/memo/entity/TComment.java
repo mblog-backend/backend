@@ -35,6 +35,9 @@ public class TComment implements Serializable {
     
     private Timestamp updated;
 
+    
+    private String mentionedUserId;
+
     public Integer getId() {
         return id;
     }
@@ -97,6 +100,14 @@ public class TComment implements Serializable {
 
     public void setUpdated(Timestamp updated) {
         this.updated = updated;
+    }
+
+    public String getMentionedUserId() {
+        return mentionedUserId;
+    }
+
+    public void setMentionedUserId(String mentionedUserId) {
+        this.mentionedUserId = mentionedUserId;
     }
 
 }

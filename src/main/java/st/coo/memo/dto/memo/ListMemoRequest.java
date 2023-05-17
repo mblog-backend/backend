@@ -19,5 +19,8 @@ public class ListMemoRequest {
     private Date begin;
     private Date end;
     private boolean login;
+    private boolean liked;
+    private boolean commented;
+    private boolean mentioned;
 
 }

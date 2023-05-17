@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import st.coo.memo.common.ResponseDTO;
+import st.coo.memo.dto.memo.MemoStatisticsDto;
 import st.coo.memo.dto.user.*;
 import st.coo.memo.service.UserService;
 
@@ -67,6 +68,12 @@ public class UserController {
     @SaCheckLogin()
     public ResponseDTO<List<String>> listNames() {
         return ResponseDTO.success(userService.listNames());
+    }
+
+
+    @PostMapping("/statistics")
+    public ResponseDTO<MemoStatisticsDto> getMentionedCount() {
+        return ResponseDTO.success(userService.statistics());
     }
 
 }

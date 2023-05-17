@@ -23,6 +23,7 @@ import st.coo.memo.dto.resource.ResourceDto;
 import st.coo.memo.entity.*;
 import st.coo.memo.mapper.*;
 
+import java.sql.Timestamp;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +60,9 @@ public class MemoService {
 
     @Resource
     private TransactionTemplate transactionTemplate;
+
+    @Resource
+    private CommentMapperExt commentMapperExt;
 
 
     @Transactional
@@ -257,7 +261,7 @@ public class MemoService {
         if (isLogin) {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
-        log.debug(new Gson().toJson(listMemoRequest));
+        log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
         if (total > 0) {
@@ -267,6 +271,12 @@ public class MemoService {
         response.setTotal(total);
         response.setItems(list);
         response.setTotalPage(total % listMemoRequest.getSize() == 0 ? total / listMemoRequest.getSize() : total / listMemoRequest.getSize() + 1);
+
+        if (isLogin && listMemoRequest.isCommented() && listMemoRequest.isMentioned()) {
+            TUser tUser = new TUser();
+            tUser.setLastClickedMentioned(Timestamp.valueOf(LocalDateTime.now()));
+            userMapper.updateByQuery(tUser,true,QueryWrapper.create().and(T_USER.ID.eq(StpUtil.getLoginIdAsInt())));
+        }
         return response;
     }
 
@@ -383,6 +393,7 @@ public class MemoService {
             Assert.isTrue(memoMapper.removeLikeCount(request.getMemoId()) == 1, "更新like数量异常");
         }
     }
+
 
 
 }

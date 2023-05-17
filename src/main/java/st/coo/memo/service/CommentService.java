@@ -14,10 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import st.coo.memo.common.BizException;
 import st.coo.memo.common.ResponseCode;
-import st.coo.memo.dto.comment.CommentDto;
-import st.coo.memo.dto.comment.QueryCommentListRequest;
-import st.coo.memo.dto.comment.QueryCommentListResponse;
-import st.coo.memo.dto.comment.SaveCommentRequest;
+import st.coo.memo.dto.comment.*;
 import st.coo.memo.entity.TComment;
 import st.coo.memo.entity.TMemo;
 import st.coo.memo.entity.TUser;
@@ -29,8 +26,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static st.coo.memo.entity.table.Tables.T_COMMENT;
+import static st.coo.memo.entity.table.Tables.T_USER;
 
 @Slf4j
 @Component
@@ -59,21 +58,29 @@ public class CommentService {
 
         String content = saveCommentRequest.getContent();
         Matcher matcher = pattern.matcher(content);
-        List<String> mentioned = Lists.newArrayList();
+        List<MentionedUser> mentioned = Lists.newArrayList();
         while (matcher.find()) {
             String username = matcher.group().trim();
             if (StringUtils.isNotEmpty(username)) {
-                mentioned.add(username);
+                username= username.substring(1);
+                TUser mentionedUser = userMapperExt.selectOneByQuery(QueryWrapper.create().and(T_USER.DISPLAY_NAME.eq(username)));
+                if (mentionedUser != null) {
+                    mentioned.add(new MentionedUser(mentionedUser.getId(), mentionedUser.getDisplayName()));
+                }
             }
         }
 
         transactionTemplate.executeWithoutResult(s -> {
+            String names = Joiner.on(",").join(mentioned.stream().map(MentionedUser::getName).collect(Collectors.toList()));
+            String ids = Joiner.on(",#").join(mentioned.stream().map(MentionedUser::getId).collect(Collectors.toList()));
+
             TComment comment = new TComment();
             comment.setContent(content);
             comment.setMemoId(saveCommentRequest.getMemoId());
             comment.setUserId(user.getId());
             comment.setUserName(user.getDisplayName());
-            comment.setMentioned(Joiner.on(",").join(mentioned));
+            comment.setMentioned(names);
+            comment.setMentionedUserId(StringUtils.isEmpty(ids) ? "" :"#"+ ids + ",");
 
             Assert.isTrue(memoMapperExt.addCommentCount(memo.getId()) == 1, "更新评论数量异常");
             Assert.isTrue(commentMapperExt.insertSelective(comment) == 1, "写入评论异常");

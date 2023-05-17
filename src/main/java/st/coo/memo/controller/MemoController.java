@@ -66,4 +66,6 @@ public class MemoController {
         memoService.makeRelation(request);
         return ResponseDTO.success();
     }
+
+
 }

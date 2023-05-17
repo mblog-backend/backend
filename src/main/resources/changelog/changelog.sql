@@ -161,3 +161,7 @@ create table t_user_memo_relation
     updated timestamp DEFAULT current_timestamp ON UPDATE current_timestamp
 );
 alter table t_memo change column fav_count like_count int default 0;
+
+-- changeset jerry:17
+alter table t_comment add column mentioned_user_id varchar(256);
+alter table t_user add column last_clicked_mentioned timestamp default null;

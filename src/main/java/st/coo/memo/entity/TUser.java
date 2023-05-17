@@ -41,6 +41,9 @@ public class TUser implements Serializable {
     
     private String avatarUrl;
 
+    
+    private Timestamp lastClickedMentioned;
+
     public Integer getId() {
         return id;
     }
@@ -119,6 +122,14 @@ public class TUser implements Serializable {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public Timestamp getLastClickedMentioned() {
+        return lastClickedMentioned;
+    }
+
+    public void setLastClickedMentioned(Timestamp lastClickedMentioned) {
+        this.lastClickedMentioned = lastClickedMentioned;
     }
 
 }

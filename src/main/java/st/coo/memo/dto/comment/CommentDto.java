@@ -15,5 +15,6 @@ public class CommentDto {
     private Timestamp created;
     private Timestamp updated;
     private String content;
-    private List<String> mentioned;
+    private String mentioned;
+    private String mentionedUserId;
 }
