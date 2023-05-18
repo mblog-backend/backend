@@ -101,7 +101,7 @@ public class CommentService {
 
     public QueryCommentListResponse query(QueryCommentListRequest request) {
         Page<TComment> paginate = commentMapperExt.paginate(request.getPage(), request.getSize(), QueryWrapper.create()
-                .and(T_COMMENT.MEMO_ID.eq(request.getMemoId())).orderBy("created desc"));
+                .and(T_COMMENT.MEMO_ID.eq(request.getMemoId())).orderBy("created"));
         QueryCommentListResponse response = new QueryCommentListResponse();
         response.setList(paginate.getRecords().stream().map(r -> {
             CommentDto commentDto = new CommentDto();

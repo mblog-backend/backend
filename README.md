@@ -78,7 +78,7 @@ DEMO:
 
 ### 微信交流群
 
-![](https://images.kingwrcy.cn/blog/20230511204418.png)
+![](https://images.kingwrcy.cn/blog/5f5b7d958479df511d124a05861b257.jpg)
 
 ## 部署
 
