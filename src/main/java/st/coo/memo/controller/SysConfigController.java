@@ -37,7 +37,13 @@ public class SysConfigController {
 
     @GetMapping("/")
     public ResponseDTO<List<SysConfigDto>> getConfig() {
-        List<String> keys = Lists.newArrayList(SysConfigConstant.OPEN_REGISTER,SysConfigConstant.WEBSITE_TITLE);
+        List<String> keys = Lists.newArrayList(SysConfigConstant.OPEN_REGISTER,
+                SysConfigConstant.WEBSITE_TITLE,
+                SysConfigConstant.OPEN_COMMENT,
+                SysConfigConstant.OPEN_LIKE,
+                SysConfigConstant.MEMO_MAX_LENGTH,
+                SysConfigConstant.INDEX_WIDTH
+                );
         return ResponseDTO.success(sysConfigService.getAll(keys));
     }
 }

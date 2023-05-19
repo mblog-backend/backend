@@ -71,7 +71,7 @@ public class MemoService {
         if (tMemo == null) {
             return;
         }
-        if (!Objects.equals(tMemo.getUserId(), StpUtil.getLoginIdAsInt())) {
+        if (!StpUtil.getStpLogic().hasRole("ADMIN") && !Objects.equals(tMemo.getUserId(), StpUtil.getLoginIdAsInt())) {
             throw new BizException(ResponseCode.fail, "不能删除其他人的记录");
         }
         if (StringUtils.hasText(tMemo.getTags())) {
@@ -261,7 +261,7 @@ public class MemoService {
         if (isLogin) {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
-        log.info(new Gson().toJson(listMemoRequest));
+//        log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
         if (total > 0) {
@@ -372,6 +372,11 @@ public class MemoService {
 
     @Transactional
     public void makeRelation(MemoRelationRequest request) {
+        boolean openLike = sysConfigService.getBoolean(SysConfigConstant.OPEN_LIKE);
+        if (!openLike){
+            throw new BizException(ResponseCode.fail, "禁止点赞");
+        }
+
         QueryWrapper queryWrapper = QueryWrapper.create()
                 .and(T_USER_MEMO_RELATION.MEMO_ID.eq(request.getMemoId()))
                 .and(T_USER_MEMO_RELATION.USER_ID.eq(StpUtil.getLoginIdAsInt()))

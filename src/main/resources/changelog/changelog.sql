@@ -165,3 +165,13 @@ alter table t_memo change column fav_count like_count int default 0;
 -- changeset jerry:17
 alter table t_comment add column mentioned_user_id varchar(256);
 alter table t_user add column last_clicked_mentioned timestamp default null;
+
+-- changeset jerry:18
+alter table t_dev_token add column user_id int default  1;
+drop index `name` on t_dev_token;
+
+-- changeset jerry:19
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('OPEN_COMMENT', '', 'false');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('OPEN_LIKE', '', 'false');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('MEMO_MAX_LENGTH', '', '300');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('INDEX_WIDTH', '', '50rem');

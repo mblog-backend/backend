@@ -148,6 +148,24 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <changeLogFile>${basedir}/src/main/resources/conf/liquibase/master_changelog.xml</changeLogFile>
+                    <propertyFile>${basedir}/src/main/resources/liquibase.properties</propertyFile>
+                    <outputChangeLogFile>${basedir}/src/main/resources/changelog/changelog.xml</outputChangeLogFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mysql</groupId>
+                        <artifactId>mysql-connector-j</artifactId>
+                        <version>8.0.33</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 

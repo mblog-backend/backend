@@ -1,6 +1,6 @@
 package st.coo.memo.controller;
 
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 import st.coo.memo.common.ResponseDTO;
@@ -9,7 +9,7 @@ import st.coo.memo.service.DevTokenService;
 
 @RestController
 @RequestMapping("/api/token")
-@SaCheckRole("ADMIN")
+@SaCheckLogin
 public class DevTokenController {
 
     @Resource

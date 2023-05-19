@@ -29,21 +29,25 @@ public class DevTokenService {
     @Resource
     private DevTokenMapperExt devTokenMapperExt;
 
+
     public TokenDto get() {
-        List<TokenDto> list = devTokenMapperExt.selectAll().stream().map(r -> {
+        int userId = StpUtil.getLoginIdAsInt();
+        List<TokenDto> list = devTokenMapperExt.selectListByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default")
+                .and(T_DEV_TOKEN.USER_ID.eq(userId))).stream().map(r -> {
             TokenDto dto = new TokenDto();
             BeanUtils.copyProperties(r, dto);
             return dto;
         }).toList();
-        return CollectionUtils.isEmpty(list) ?null : list.get(0);
+        return CollectionUtils.isEmpty(list) ? null : list.get(0);
     }
 
     public void reset(int id) {
-        TDevToken token = devTokenMapperExt.selectOneById(id);
+        int userId = StpUtil.getLoginIdAsInt();
+        TDevToken token = devTokenMapperExt.selectOneByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default").and(T_DEV_TOKEN.USER_ID.eq(userId)));
         if (token == null) {
             throw new BizException(ResponseCode.fail, "token不存在");
         }
-        StpUtil.login(1, new SaLoginModel().setDevice(LoginType.API.name()).setTimeout(apiExpiredSeconds));
+        StpUtil.login(userId, new SaLoginModel().setDevice(LoginType.API.name()).setTimeout(apiExpiredSeconds));
         TDevToken newToken = new TDevToken();
         newToken.setToken(StpUtil.getTokenInfo().getTokenValue());
         devTokenMapperExt.updateByCondition(newToken, QueryCondition.create(T_DEV_TOKEN.ID, id));
@@ -51,9 +55,11 @@ public class DevTokenService {
 
 
     public void enable() {
-        TDevToken token = devTokenMapperExt.selectOneByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default"));
+        int id = StpUtil.getLoginIdAsInt();
+        TDevToken token = devTokenMapperExt.selectOneByCondition(QueryCondition.create(
+                T_DEV_TOKEN.NAME, "default").and(T_DEV_TOKEN.USER_ID.eq(id)));
         if (token == null) {
-            StpUtil.login(1, new SaLoginModel()
+            StpUtil.login(id, new SaLoginModel()
                     .setDevice(LoginType.API.name())
                     .setTimeout(apiExpiredSeconds)
                     .setIsWriteHeader(false)
@@ -62,11 +68,13 @@ public class DevTokenService {
             token = new TDevToken();
             token.setToken(StpUtil.getTokenInfo().getTokenValue());
             token.setName("default");
+            token.setUserId(id);
             devTokenMapperExt.insertSelective(token);
         }
     }
 
     public void disable() {
-        devTokenMapperExt.deleteByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default"));
+        int id = StpUtil.getLoginIdAsInt();
+        devTokenMapperExt.deleteByCondition(QueryCondition.create(T_DEV_TOKEN.NAME, "default").and(T_DEV_TOKEN.USER_ID.eq(id)));
     }
 }

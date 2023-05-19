@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 import st.coo.memo.common.BizException;
 import st.coo.memo.common.ResponseCode;
+import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.comment.*;
 import st.coo.memo.entity.TComment;
 import st.coo.memo.entity.TMemo;
@@ -48,11 +49,16 @@ public class CommentService {
 
     private final Pattern pattern = Pattern.compile("(@.*?)\\s+", Pattern.MULTILINE);
 
+    @Resource
+    private SysConfigService sysConfigService;
+
     public void addComment(SaveCommentRequest saveCommentRequest) {
         TUser user = userMapperExt.selectOneById(StpUtil.getLoginIdAsInt());
         TMemo memo = memoMapperExt.selectOneById(saveCommentRequest.getMemoId());
 
-        if (!Objects.equals(memo.getEnableComment(), 1)) {
+        boolean openComment = sysConfigService.getBoolean(SysConfigConstant.OPEN_COMMENT);
+
+        if (!openComment || !Objects.equals(memo.getEnableComment(), 1)) {
             throw new BizException(ResponseCode.fail, "禁止评论");
         }
 

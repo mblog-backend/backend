@@ -9,6 +9,8 @@
 
 转念一想,就这么点microBlog的功能能有多麻烦?自己撸一个得了?(~~其实是给闲的~~).
 
+[更新记录](https://github.com/kingwrcy/mblog-backend/blob/main/release.md)
+
 ## 项目介绍
 mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微博,可单用户使用,也可以支持多用户.
 

@@ -19,6 +19,9 @@ public class TDevToken implements Serializable {
     
     private String token;
 
+    
+    private Integer userId;
+
     public Integer getId() {
         return id;
     }
@@ -41,6 +44,14 @@ public class TDevToken implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
 }

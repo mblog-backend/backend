@@ -28,7 +28,10 @@ public class SaTokenConfig implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor(auth -> {
             if (StpUtil.isLogin() && Objects.equals(StpUtil.getLoginDevice(), LoginType.API.name())) {
 
-                long count = Db.selectCountByQuery("t_dev_token", QueryWrapper.create().and(T_DEV_TOKEN.TOKEN.eq(StpUtil.getTokenValue())));
+                long count = Db.selectCountByQuery("t_dev_token", QueryWrapper.create()
+                        .and(T_DEV_TOKEN.TOKEN.eq(StpUtil.getTokenValue()))
+                        .and(T_DEV_TOKEN.USER_ID.eq(StpUtil.getLoginIdAsInt()))
+                );
                 if (count == 0  ) {
                     ResponseDTO<Void> responseDTO = ResponseDTO.fail(ResponseCode.need_login.getCode(),"api token已失效");
                     Gson gson = new Gson();
