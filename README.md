@@ -84,6 +84,8 @@ DEMO:
 
 ## 部署
 
+[不会命令行安装的看这里,通过Nas的Docker管理界面安装](https://github.com/kingwrcy/mblog-backend/blob/main/doc/gui_install.md)
+
 #### 服务端
 
 ***数据库记得提前建好,对应的账号得有create table的权限***
