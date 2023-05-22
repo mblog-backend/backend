@@ -1,5 +1,6 @@
 package st.coo.memo.dto.user;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -19,6 +20,7 @@ public class UserDto {
     private Timestamp created;
 
     private Timestamp updated;
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, title = "角色名,ADMIN:管理员,USER:普通用户", example = "ADMIN")
 
     private String role;
     private String avatarUrl;

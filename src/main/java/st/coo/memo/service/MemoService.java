@@ -184,7 +184,6 @@ public class MemoService {
         TMemo tMemo = new TMemo();
         tMemo.setId(existMemo.getId());
         List<String> tags = parseTags(updateMemoRequest.getContent());
-        tMemo.setPriority(updateMemoRequest.getPriority());
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         tMemo.setContent(replaceFirstLine(content, tags).trim());
         tMemo.setEnableComment(updateMemoRequest.isEnableComment() ? 1 : 0);
