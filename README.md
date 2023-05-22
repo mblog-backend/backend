@@ -116,15 +116,16 @@ DEMO:
 ##### Docker安装
 ```
 docker run --volume=${PWD}/upload:/opt/mblog/upload \
---publish=你要映射的后端端口:38321 \
+--publish=你要映射的后端端口,必填:38321 \
 --restart=always \
 --name=mblog-backend \
 --detach=true \
---env MYSQL_USER=数据库用户名 \
---env MYSQL_PASS=数据库密码 \
---env MYSQL_URL=数据库地址:端口 \
---env MYSQL_DB=数据库名称 \
---env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的) \
+--env MYSQL_USER=数据库用户名,必填 \
+--env MYSQL_PASS=数据库密码,必填 \
+--env MYSQL_URL=数据库地址:端口,必填,前面没有http(s) \
+--env MYSQL_DB=数据库名称,必填) \
+--env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,必填) \
+--env ENABLE_SWAGGER=true(需要开启API文档的才配置,否则不需要配置,选填) \
 kingwrcy/mblog-backend:latest
 ```
 
@@ -132,11 +133,13 @@ kingwrcy/mblog-backend:latest
 - 数据库相关的记得更改
 - 映射的端口自己需要就改
 - 其中`MBLOG_FRONT_DOMAIN`如果**前后端域名+端口全部一致,可以不用配置,如果不一致,哪怕端口不一致,也需要配置**,如:`https://mblog-front.com`
+- 开启了API文档的,API文档访问地址为`http://服务端IP:服务端端口/api.html`
 
 #### 前端安装
 ##### 源码安装
 1. `git clone git@github.com:kingwrcy/mblog-front.git`
 2. 更改`.env.docker`文件中的`VITE_BASE_URL`内容为你的服务端地址,有端口的端口也要加上,如:`https://mblog-server.com:2023`
+2. 更改`.env.docker`文件中的`VITE_MBLOG_VERSION`内容版本号,自定义,如`v1.0.5`
 3. `yarn i && yarn build-only --mode=docker` 需要Node版本>=v18
 4. 打包出来的dist目录就可以传到cdn了
 
@@ -152,10 +155,10 @@ kingwrcy/mblog-backend:latest
 ##### Docker安装
 ```
 docker run \
---publish=你要映射的前端端口:80 \
+--publish=你要映射的前端端口,必填:80 \
 --restart=always \
 --name=mblog-front \
 --detach=true \
---env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口 \
+--env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口,必填 \
 kingwrcy/mblog-front:latest
 ```
