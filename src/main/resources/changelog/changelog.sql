@@ -175,3 +175,6 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('OPEN_COMMENT', ''
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('OPEN_LIKE', '', 'false');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('MEMO_MAX_LENGTH', '', '300');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('INDEX_WIDTH', '', '50rem');
+
+-- changeset jerry:20
+alter table t_resource modify column file_type varchar(128);

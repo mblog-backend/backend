@@ -9,8 +9,12 @@ public class UploadResourceResponse {
     private String publicId;
     @Schema(title = "资源访问地址")
     private String url;
-    @Schema(title = "资源文件类型")
+    @Schema(title = "资源文件后缀")
     private String suffix;
     @Schema(title = "存储类型,LOCAL:本地存储,QINIU:七牛云存储")
     private String storageType;
+    @Schema(title = "资源文件类型")
+    private String fileType;
+    @Schema(title = "原始文件名称")
+    private String fileName;
 }

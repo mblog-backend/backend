@@ -108,6 +108,8 @@ public class ResourceService implements ApplicationContextAware {
         tResource.setUserId(StpUtil.getLoginIdAsInt());
         resourceMapper.insertSelective(tResource);
         uploadResourceResponse.setStorageType(storageType.name());
+        uploadResourceResponse.setFileName(originalFilename);
+        uploadResourceResponse.setFileType(fileType);
         return uploadResourceResponse;
     }
 

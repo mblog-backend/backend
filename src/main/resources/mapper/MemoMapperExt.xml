@@ -28,6 +28,7 @@
             <result column="suffix" property="suffix" jdbcType="VARCHAR" />
             <result column="fileType" property="fileType" jdbcType="VARCHAR" />
             <result column="storageType" property="storageType" jdbcType="VARCHAR" />
+            <result column="fileName" property="fileName" jdbcType="VARCHAR" />
         </collection>
     </resultMap>
 
@@ -58,6 +59,9 @@
 
     <sql id="listMemoWhere">
         where t.status = 'NORMAL'
+        <if test="search != null and search != ''">
+            and t.content like concat('%',#{search},'%')
+        </if>
         <if test="begin != null and end != null">
             and t.created between #{begin} and #{end}
         </if>
@@ -106,7 +110,8 @@
         r.public_id AS publicId,
         r.suffix,
         r.file_type AS fileType,
-        r.storage_type AS storageType
+        r.storage_type AS storageType,
+        r.file_name AS fileName
         <if test="login == true">,
         mr.id as liked
         </if>

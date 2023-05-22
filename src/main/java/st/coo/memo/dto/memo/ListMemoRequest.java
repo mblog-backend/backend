@@ -35,6 +35,9 @@ public class ListMemoRequest {
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED,description = "按结束时间搜索",example = "2023-05-21T15:59:59.999Z")
     private Date end;
 
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED,description = "按内容搜索",example = "hello")
+    private String search;
+
     @Schema(hidden = true)
     private boolean login;
 
