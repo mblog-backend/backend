@@ -15,9 +15,12 @@ public class UpdateUserRequest {
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, title = "个人介绍,支持markdown")
     private String bio;
 
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, title = "头像URL")
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, title = "头像URL")
     private String avatarUrl;
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED, title = "密码", example = "a123456")
     private String password;
+
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, title = "默认的可见性", example = "PUBLIC")
+    private String defaultVisibility;
 }

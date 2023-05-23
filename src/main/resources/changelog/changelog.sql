@@ -178,3 +178,7 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('INDEX_WIDTH', '',
 
 -- changeset jerry:20
 alter table t_resource modify column file_type varchar(128);
+
+-- changeset jerry:21
+alter table t_user add column default_visibility varchar(20) default 'PUBLIC';
+drop table t_user_config;

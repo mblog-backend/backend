@@ -44,6 +44,9 @@ public class TUser implements Serializable {
     
     private Timestamp lastClickedMentioned;
 
+    
+    private String defaultVisibility;
+
     public Integer getId() {
         return id;
     }
@@ -130,6 +133,14 @@ public class TUser implements Serializable {
 
     public void setLastClickedMentioned(Timestamp lastClickedMentioned) {
         this.lastClickedMentioned = lastClickedMentioned;
+    }
+
+    public String getDefaultVisibility() {
+        return defaultVisibility;
+    }
+
+    public void setDefaultVisibility(String defaultVisibility) {
+        this.defaultVisibility = defaultVisibility;
     }
 
 }

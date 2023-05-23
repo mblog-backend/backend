@@ -135,6 +135,7 @@ public class UserService {
         response.setToken(tokenInfo.getTokenValue());
         response.setRole(user.getRole());
         response.setUserId(user.getId());
+        response.setDefaultVisibility(user.getDefaultVisibility());
         return response;
     }
 
