@@ -48,7 +48,8 @@ public class SysConfigController {
                 SysConfigConstant.OPEN_COMMENT,
                 SysConfigConstant.OPEN_LIKE,
                 SysConfigConstant.MEMO_MAX_LENGTH,
-                SysConfigConstant.INDEX_WIDTH
+                SysConfigConstant.INDEX_WIDTH,
+                SysConfigConstant.USER_MODEL
                 );
         return ResponseDTO.success(sysConfigService.getAll(keys));
     }

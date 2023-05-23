@@ -11,4 +11,5 @@ public class SysConfigConstant {
     public final static String OPEN_LIKE = "OPEN_LIKE";
     public final static String MEMO_MAX_LENGTH = "MEMO_MAX_LENGTH";
     public final static String INDEX_WIDTH = "INDEX_WIDTH";
+    public final static String USER_MODEL = "USER_MODEL";
 }
