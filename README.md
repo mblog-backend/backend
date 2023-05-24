@@ -80,13 +80,15 @@ DEMO:
 
 ### 微信交流群
 
-![](https://images.kingwrcy.cn/blog/5f5b7d958479df511d124a05861b257.jpg)
+![](https://images.kingwrcy.cn/blog/0746f8eecba91e8a384becbb0e948e4.jpg)
 
 ## 部署
 
 [不会命令行安装的看这里,通过Nas的Docker管理界面安装](https://github.com/kingwrcy/mblog-backend/blob/main/doc/gui_install.md)
 
 #### 服务端
+
+***因为一些原因,mysql需要8以上***
 
 ***数据库记得提前建好,对应的账号得有create table的权限***
 
@@ -124,7 +126,7 @@ docker run --volume=${PWD}/upload:/opt/mblog/upload \
 --env MYSQL_PASS=数据库密码,必填 \
 --env MYSQL_URL=数据库地址:端口,必填,前面没有http(s) \
 --env MYSQL_DB=数据库名称,必填) \
---env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,必填) \
+--env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,带http(s),有端口带端口,必填) \
 --env ENABLE_SWAGGER=true(需要开启API文档的才配置,否则不需要配置,选填) \
 kingwrcy/mblog-backend:latest
 ```
@@ -159,6 +161,6 @@ docker run \
 --restart=always \
 --name=mblog-front \
 --detach=true \
---env MBLOG_SERVER_URL=mblog服务端地址,有端口就带上端口,必填 \
+--env MBLOG_SERVER_URL=mblog服务端地址,带http(s),有端口带端口,必填 \
 kingwrcy/mblog-front:latest
 ```
