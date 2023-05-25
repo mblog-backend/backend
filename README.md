@@ -108,6 +108,16 @@ DEMO:
 
 - AllInOne 安装可以参看 `根目录下的docker-compose.yml`,里面包含了前端,后端和MySQL 8.
 
+#### MYSQL 5.7注意事项
+
+因为开发是在8.0.33的版本上开发的,没想到5.7里mysql要求timestamp类型必须有值,所以直接在5.7上运行,会报错.
+
+解决办法:
+
+1. Docker启动mysql的,看[这里](https://github.com/kingwrcy/mblog-backend/blob/main/docker-compose.yml),在command中加上 ` '--explicit_defaults_for_timestamp=ON' `
+2. 非Docker启动的,找到MYSQL 5.7的配置文件,在[mysqld]下方加入`explicit_defaults_for_timestamp = 1`
+3. 删掉已存在的数据里的所有的表和数据,再次启动后端,会自己重建的,**记得数据库不能删除,是所有的表和数据删除**.
+
 
 ##### 源码安装
 1. `git clone git@github.com:kingwrcy/mblog-backend.git`
@@ -126,7 +136,7 @@ docker run --volume=${PWD}/upload:/opt/mblog/upload \
 --env MYSQL_PASS=数据库密码,必填 \
 --env MYSQL_URL=数据库地址:端口,必填,前面没有http(s) \
 --env MYSQL_DB=数据库名称,必填) \
---env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,带http(s),有端口带端口,必填) \
+--env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填) \
 --env ENABLE_SWAGGER=true(需要开启API文档的才配置,否则不需要配置,选填) \
 kingwrcy/mblog-backend:latest
 ```
@@ -161,6 +171,6 @@ docker run \
 --restart=always \
 --name=mblog-front \
 --detach=true \
---env MBLOG_SERVER_URL=mblog服务端地址,带http(s),有端口带端口,必填 \
+--env MBLOG_SERVER_URL=mblog服务端地址,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填 \
 kingwrcy/mblog-front:latest
 ```

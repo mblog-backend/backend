@@ -1,8 +1,8 @@
 version: "3.3"
 services:
   mysql:
-    image: mysql:8.0.33
-    container_name: mysql-8.0.33
+    image: mysql:5.7.42
+    container_name: mysql-5.7.42
     restart: always
     volumes:
       - mysql_data:/var/lib/mysql
@@ -11,6 +11,12 @@ services:
       MYSQL_DATABASE: mblog
       MYSQL_USER: mblog
       MYSQL_PASSWORD: FeZ3DVjdFMAdzJmu
+    command: [
+      '--character-set-server=utf8mb4',
+      '--collation-server=utf8mb4_general_ci',
+      '--max_connections=3000',
+      '--explicit_defaults_for_timestamp=ON'
+    ]
     expose:
       - 3306
     networks:
@@ -47,3 +53,9 @@ services:
       - "80:80"
     networks:
       - backend
+volumes:
+  mysql_data:
+  mblog-backend-data:
+
+networks:
+  backend:
