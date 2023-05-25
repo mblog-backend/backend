@@ -137,7 +137,6 @@ docker run --volume=${PWD}/upload:/opt/mblog/upload \
 --env MYSQL_URL=数据库地址:端口,必填,前面没有http(s) \
 --env MYSQL_DB=数据库名称,必填) \
 --env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填) \
---env ENABLE_SWAGGER=true(需要开启API文档的才配置,否则不需要配置,选填) \
 kingwrcy/mblog-backend:latest
 ```
 
@@ -146,6 +145,11 @@ kingwrcy/mblog-backend:latest
 - 映射的端口自己需要就改
 - 其中`MBLOG_FRONT_DOMAIN`如果**前后端域名+端口全部一致,可以不用配置,如果不一致,哪怕端口不一致,也需要配置**,如:`https://mblog-front.com`
 - 开启了API文档的,API文档访问地址为`http://服务端IP:服务端端口/api.html`
+
+| 非必填环境变量 | 默认值               | 解释                       |
+|---------|--------------------------|--------------------------|
+| ENABLE_SWAGGER     | false | 需要开启API文档的才配置,否则不需要配置,选填 |
+| JAVA_OPTS     |   "-Xms512m -Xmx512m"     | 内存设置,建议最低不要低于256m,默认512m |
 
 #### 前端安装
 ##### 源码安装
