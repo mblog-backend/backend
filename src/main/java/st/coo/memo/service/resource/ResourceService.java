@@ -60,6 +60,7 @@ public class ResourceService implements ApplicationContextAware {
     public ResourceService() {
         RESOURCE_PROVIDER_MAP.put(StorageType.LOCAL, LocalResourceProvider.class);
         RESOURCE_PROVIDER_MAP.put(StorageType.QINIU, QiNiuResourceProvider.class);
+        RESOURCE_PROVIDER_MAP.put(StorageType.AWSS3, AWSS3ResourceProvider.class);
     }
 
     public List<UploadResourceResponse> upload(MultipartFile[] multipartFiles) {

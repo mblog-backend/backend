@@ -76,6 +76,11 @@
             <version>1.2.2</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.472</version>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>

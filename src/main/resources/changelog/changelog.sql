@@ -185,3 +185,11 @@ drop table t_user_config;
 
 -- changeset jerry:22
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('USER_MODEL', '', 'SINGLE');
+
+-- changeset jerry:23
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('CUSTOM_CSS', '', '');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('CUSTOM_JAVASCRIPT', '', '');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('AWSS3_PARAM', '', '{}');
+
+-- changeset jerry:24
+alter table t_resource modify column external_link text;

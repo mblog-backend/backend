@@ -49,7 +49,9 @@ public class SysConfigController {
                 SysConfigConstant.OPEN_LIKE,
                 SysConfigConstant.MEMO_MAX_LENGTH,
                 SysConfigConstant.INDEX_WIDTH,
-                SysConfigConstant.USER_MODEL
+                SysConfigConstant.USER_MODEL,
+                SysConfigConstant.CUSTOM_CSS,
+                SysConfigConstant.CUSTOM_JAVASCRIPT
                 );
         return ResponseDTO.success(sysConfigService.getAll(keys));
     }
