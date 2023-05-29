@@ -62,8 +62,9 @@ DEMO:
 - 前后端分离,前端和后端域名可以不一致,可以后端部署在nas上,前端部署在cdn.
 
 ## 待开发的功能
-- 输入博文时自动带入当时天气信息
-- 支持更多的oss提供商
+- 支持sqlite
+- 提供chrome插件,一键转发到mblog
+- 争取提供前后不分离版本
 - ......
 
 ## 使用到的框架
@@ -118,6 +119,9 @@ DEMO:
 2. 非Docker启动的,找到MYSQL 5.7的配置文件,在[mysqld]下方加入`explicit_defaults_for_timestamp = 1`
 3. 删掉已存在的数据里的所有的表和数据,再次启动后端,会自己重建的,**记得数据库不能删除,是所有的表和数据删除**.
 
+##### 宝塔面板安装
+
+感谢 @lzhang ,[教程在此](https://laozhang.org/archives/3387.html) ,图文并茂,大家有需要的参考下.
 
 ##### 源码安装
 1. `git clone git@github.com:kingwrcy/mblog-backend.git`
