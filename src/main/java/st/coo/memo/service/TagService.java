@@ -19,6 +19,7 @@ import st.coo.memo.mapper.MemoMapperExt;
 import st.coo.memo.mapper.TagMapperExt;
 import st.coo.memo.mapper.UserMapperExt;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import static st.coo.memo.entity.table.Tables.*;
@@ -81,6 +82,7 @@ public class TagService {
                 TMemo newMemo = new TMemo();
                 String tags = memo.getTags();
                 newMemo.setTags(tags.replaceFirst(oldTag.getName() + ",", dto.getName() + ","));
+                newMemo.setUpdated(new Timestamp(System.currentTimeMillis()));
                 int num = memoMapperExt.updateByQuery(newMemo, true, QueryWrapper.create().and(T_MEMO.ID.eq(memo.getId())));
                 Assert.isTrue(num == 1,"更新memo异常");
             }

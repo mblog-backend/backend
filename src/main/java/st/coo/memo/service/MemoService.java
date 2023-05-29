@@ -11,6 +11,7 @@ import com.mybatisflex.core.row.Row;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -63,6 +64,9 @@ public class MemoService {
 
     @Resource
     private CommentMapperExt commentMapperExt;
+
+    @Value("${spring.profiles.active:}")
+    private String profile;
 
 
     @Transactional
@@ -138,7 +142,8 @@ public class MemoService {
         }
         tMemo.setEnableComment(saveMemoRequest.isEnableComment() ? 1 : 0);
         tMemo.setContent(replaceFirstLine(content, tags).trim());
-
+        tMemo.setCreated(new Timestamp(System.currentTimeMillis()));
+        tMemo.setUpdated(new Timestamp(System.currentTimeMillis()));
         List<TTag> existsTagList = tags.size() == 0 ? Lists.newArrayList() : tagMapper.selectListByQuery(QueryWrapper.create().
                 and(T_TAG.NAME.in(tags)).
                 and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt())));
@@ -187,6 +192,7 @@ public class MemoService {
         tMemo.setTags(Joiner.on(",").join(tags) + (tags.size() > 0 ? "," : ""));
         tMemo.setContent(replaceFirstLine(content, tags).trim());
         tMemo.setEnableComment(updateMemoRequest.isEnableComment() ? 1 : 0);
+        tMemo.setUpdated(new Timestamp(System.currentTimeMillis()));
         if (updateMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(updateMemoRequest.getVisibility().name());
         }
@@ -260,7 +266,7 @@ public class MemoService {
         if (isLogin) {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
-//        log.info(new Gson().toJson(listMemoRequest));
+        log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
         if (total > 0) {
@@ -356,9 +362,16 @@ public class MemoService {
         statisticsResponse.setTotalTags(totalTags);
         statisticsResponse.setTotalDays(totalDays);
 
-        List<Row> rows = Db.selectListBySql("select date(created) as day,count(1) as count from t_memo where " +
-                        "user_id = ? and created between ? and ? group by date(created) order by date(created) desc",
-                userId, request.getBegin(), request.getEnd());
+        List<Row> rows = Lists.newArrayList();
+        if (Objects.equals(profile,"sqlite")){
+            rows = Db.selectListBySql("select date(created/1000,'unixepoch') as day,count(1) as count from t_memo where " +
+                            "user_id = ? and created between ? and ? group by date(created/1000,'unixepoch') order by date(created/1000,'unixepoch') desc",
+                    userId, request.getBegin(), request.getEnd());
+        }else{
+            rows = Db.selectListBySql("select date(created) as day,count(1) as count from t_memo where " +
+                            "user_id = ? and created between ? and ? group by date(created) order by date(created) desc",
+                    userId, request.getBegin(), request.getEnd());
+        }
         statisticsResponse.setItems(rows.stream().map(r -> {
             StatisticsResponse.Item item = new StatisticsResponse.Item();
             item.setDate(r.getString("day"));
@@ -391,6 +404,7 @@ public class MemoService {
                 throw new BizException(ResponseCode.fail, "数据已存在");
             }
             Assert.isTrue(memoMapper.addLikeCount(request.getMemoId()) == 1, "更新like数量异常");
+            relation.setCreated(new Timestamp(System.currentTimeMillis()));
             userMemoRelationMapperExt.insertSelective(relation);
         } else if (Objects.equals(request.getOperateType(), "REMOVE")) {
             Assert.isTrue(userMemoRelationMapperExt.deleteByQuery(queryWrapper) == 1, "删除like数据异常");

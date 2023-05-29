@@ -23,6 +23,7 @@ import st.coo.memo.mapper.CommentMapperExt;
 import st.coo.memo.mapper.MemoMapperExt;
 import st.coo.memo.mapper.UserMapperExt;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -87,7 +88,8 @@ public class CommentService {
             comment.setUserName(user.getDisplayName());
             comment.setMentioned(names);
             comment.setMentionedUserId(StringUtils.isEmpty(ids) ? "" :"#"+ ids + ",");
-
+            comment.setCreated(new Timestamp(System.currentTimeMillis()));
+            comment.setUpdated(new Timestamp(System.currentTimeMillis()));
             Assert.isTrue(memoMapperExt.addCommentCount(memo.getId()) == 1, "更新评论数量异常");
             Assert.isTrue(commentMapperExt.insertSelective(comment) == 1, "写入评论异常");
         });

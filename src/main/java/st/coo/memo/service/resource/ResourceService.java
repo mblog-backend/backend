@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,8 @@ public class ResourceService implements ApplicationContextAware {
         tResource.setExternalLink(uploadResourceResponse.getUrl());
         tResource.setStorageType(storageType.name());
         tResource.setUserId(StpUtil.getLoginIdAsInt());
+        tResource.setCreated(new Timestamp(System.currentTimeMillis()));
+        tResource.setUpdated(new Timestamp(System.currentTimeMillis()));
         resourceMapper.insertSelective(tResource);
         uploadResourceResponse.setStorageType(storageType.name());
         uploadResourceResponse.setFileName(originalFilename);

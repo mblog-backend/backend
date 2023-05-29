@@ -63,6 +63,8 @@ public class UserService {
         user.setUsername(registerUserRequest.getUsername());
         user.setDisplayName(StringUtils.defaultString(registerUserRequest.getDisplayName(), registerUserRequest.getUsername()));
         user.setPasswordHash(BCrypt.hashpw(registerUserRequest.getPassword()));
+        user.setCreated(new Timestamp(System.currentTimeMillis()));
+        user.setUpdated(new Timestamp(System.currentTimeMillis()));
         try {
             userMapper.insertSelective(user);
         } catch (DuplicateKeyException e) {
