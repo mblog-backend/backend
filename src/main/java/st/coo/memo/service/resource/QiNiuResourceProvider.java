@@ -15,12 +15,14 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import st.coo.memo.common.BizException;
+import st.coo.memo.common.QiniuRegion;
 import st.coo.memo.common.ResponseCode;
 import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.resource.UploadResourceResponse;
 import st.coo.memo.service.SysConfigService;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -42,13 +44,28 @@ public class QiNiuResourceProvider implements ResourceProvider {
         String domain = MapUtils.getString(map, "domain");
         String prefix = MapUtils.getString(map, "prefix");
         String suffix = MapUtils.getString(map, "suffix");
+        String region = MapUtils.getString(map, "region");
 
         if (StringUtils.isEmpty(accessKey) || StringUtils.isEmpty(secretKey) || StringUtils.isEmpty(bucket) || StringUtils.isEmpty(domain)) {
             throw new BizException(ResponseCode.fail, "七牛云相关参数没有设置");
         }
 
-        //构造一个带指定 Region 对象的配置类
         Configuration cfg = new Configuration(Region.region0());
+        if (Objects.equals(region, QiniuRegion.huadong.name())){
+            cfg = new Configuration(Region.huadong());
+        }else if (Objects.equals(region, QiniuRegion.huadongZheJiang2.name())){
+            cfg = new Configuration(Region.huadongZheJiang2());
+        }else if (Objects.equals(region, QiniuRegion.huabei.name())){
+            cfg = new Configuration(Region.huabei());
+        }else if (Objects.equals(region, QiniuRegion.huanan.name())){
+            cfg = new Configuration(Region.huanan());
+        }else if (Objects.equals(region, QiniuRegion.beimei.name())){
+            cfg = new Configuration(Region.beimei());
+        }else if (Objects.equals(region, QiniuRegion.xinjiapo.name())){
+            cfg = new Configuration(Region.xinjiapo());
+        }
+
+        log.info("cfg:{}",cfg);
         cfg.resumableUploadAPIVersion = Configuration.ResumableUploadAPIVersion.V2;// 指定分片上传版本
         UploadManager uploadManager = new UploadManager(cfg);
         Auth auth = Auth.create(accessKey, secretKey);

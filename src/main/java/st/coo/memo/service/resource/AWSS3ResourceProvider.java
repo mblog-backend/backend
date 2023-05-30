@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.common.base.Stopwatch;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import jakarta.annotation.Resource;
@@ -21,6 +22,7 @@ import st.coo.memo.service.SysConfigService;
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -55,7 +57,10 @@ public class AWSS3ResourceProvider implements ResourceProvider {
         if (StringUtils.isNotEmpty(prefix)) {
             key = prefix + "/" + publicId;
         }
-        s3Client.putObject(new PutObjectRequest(bucket, key, new File(filePath))
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        log.info("开始上传到s3");
+        File file = new File(filePath);
+        s3Client.putObject(new PutObjectRequest(bucket, key, file)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
         UploadResourceResponse uploadResourceResponse = new UploadResourceResponse();
         if (StringUtils.isNotEmpty(domain)) {
@@ -63,7 +68,7 @@ public class AWSS3ResourceProvider implements ResourceProvider {
         } else {
             uploadResourceResponse.setUrl(String.format("https://s3.%s.amazonaws.com/%s/%s", region, bucket, key));
         }
-        log.info("上传到s3 成功:{}", uploadResourceResponse.getUrl());
+        log.info("上传到s3 成功:{},耗时:{}毫秒,图片大小:{}bytes", uploadResourceResponse.getUrl(),stopwatch.elapsed(TimeUnit.MILLISECONDS),file.length());
         uploadResourceResponse.setSuffix(suffix);
         uploadResourceResponse.setPublicId(publicId);
         return uploadResourceResponse;
