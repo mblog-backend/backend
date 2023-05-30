@@ -22,6 +22,8 @@ jobs:
           echo "##[set-output name=version;]VERSION=${GITHUB_REF#$"refs/tags/v"}"
           echo "##[set-output name=version_tag;]$GITHUB_REPOSITORY:${GITHUB_REF#$"refs/tags/v"}"
           echo "##[set-output name=latest_tag;]$GITHUB_REPOSITORY:latest"
+          echo "##[set-output name=allinone_version_tag;]kingwrcy/mblog:${GITHUB_REF#$"refs/tags/v"}"
+          echo "##[set-output name=allinone_latest_tag;]kingwrcy/mblog:latest"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -38,6 +40,8 @@ jobs:
         run: |
           echo VERSION_TAG=$(echo ${{ steps.version_step.outputs.version_tag }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
           echo LASTEST_TAG=$(echo ${{ steps.version_step.outputs.latest_tag  }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+          echo ALLINONE_VERSION_TAG=$(echo ${{ steps.version_step.outputs.allinone_version_tag  }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+          echo ALLINONE_LASTEST_TAG=$(echo ${{ steps.version_step.outputs.allinone_latest_tag  }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
       - name: Build and push Docker images
         id: docker_build
@@ -48,5 +52,18 @@ jobs:
           tags: |
             ${{env.VERSION_TAG}}
             ${{env.LASTEST_TAG}}
+          build-args: |
+            ${{steps.version_step.outputs.version}}
+
+      - name: Build and push Docker allinone images
+        id: docker_build
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: .
+          file: Dockerfile-allinone
+          tags: |
+            ${{env.ALLINONE_VERSION_TAG}}
+            ${{env.ALLINONE_LASTEST_TAG}}
           build-args: |
             ${{steps.version_step.outputs.version}}

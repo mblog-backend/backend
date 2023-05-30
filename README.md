@@ -60,11 +60,13 @@ DEMO:
 - 支持markdown语法
 - 支持emoji表情
 - 前后端分离,前端和后端域名可以不一致,可以后端部署在nas上,前端部署在cdn.
+- 同时也支持前后不分离,支持使用MySQL或者Sqlite
 
 ## 待开发的功能
-- 支持sqlite
+- ~~支持sqlite~~ v1.0.8已支持
+- ~~争取提供前后不分离版本~~ v1.0.8已支持
 - 提供chrome插件,一键转发到mblog
-- 争取提供前后不分离版本
+- 提供可自部署的tg机器人,一键转发到mblog
 - ......
 
 ## 使用到的框架
@@ -89,7 +91,7 @@ DEMO:
 
 #### 服务端
 
-***因为一些原因,mysql需要8以上***
+***因为一些原因,mysql需要5.7以上***
 
 ***数据库记得提前建好,对应的账号得有create table的权限***
 
@@ -131,7 +133,7 @@ DEMO:
 
 ##### Docker安装
 ```
-docker run --volume=${PWD}/upload:/opt/mblog/upload \
+docker run --volume=${PWD}/mblog:/opt/mblog \
 --publish=你要映射的后端端口,必填:38321 \
 --restart=always \
 --name=mblog-backend \
@@ -145,16 +147,23 @@ kingwrcy/mblog-backend:latest
 ```
 
 - 其中`--volume=${PWD}/upload:/opt/mblog/upload`是图片在本地存储才需要挂载的,如果是七牛云之类的,不需要挂载.
+- 其中sqlite版本的数据库位置在镜像的`/opt/mblog/data.sqlite`,需要映射出来,不然重启数据就丢失了
 - 数据库相关的记得更改
 - 映射的端口自己需要就改
 - 其中`MBLOG_FRONT_DOMAIN`如果**前后端域名+端口全部一致,可以不用配置,如果不一致,哪怕端口不一致,也需要配置**,如:`https://mblog-front.com`
 - 开启了API文档的,API文档访问地址为`http://服务端IP:服务端端口/api.html`
 
-| 非必填环境变量 | 默认值                 | 解释                                       |
-|---------|---------------------|------------------------------------------|
-| ENABLE_SWAGGER     | false               | 需要开启API文档的才配置,否则不需要配置,选填                 |
-| JAVA_OPTS     | "-Xms512m -Xmx512m" | 内存设置,建议最低不要低于256m,默认512m                 |
-| DB_TYPE     | "default"           | 数据库类型,可选 `default`:mysql,`sqlite`:sqlite |
+
+| 非必填环境变量 | 默认值                 | 解释                                                                    |
+|---------|---------------------|-----------------------------------------------------------------------|
+| ENABLE_SWAGGER     | false               | 需要开启API文档的才配置,否则不需要配置,选填                                              |
+| JAVA_OPTS     | "-Xms512m -Xmx512m" | 内存设置,建议最低不要低于256m,默认512m                                              |
+| DB_TYPE     | ""           | 数据库类型,可选 为空时默认mysql,`-sqlite`:sqlite,注意前面有`-`                         |
+| MYSQL_USER     | ""           | 数据库用户名,DB_TYPE为空时必填                                                   |
+| MYSQL_PASS     | ""           | 数据库密码,DB_TYPE为空时必填                                                    |
+| MYSQL_URL     | ""           | 格式:`数据库地址:端口`,前面没有http(s) ,DB_TYPE为空时必填                               |
+| MYSQL_DB     | ""           | 数据库名称 ,DB_TYPE为空时必填                                                   |
+| MBLOG_FRONT_DOMAIN     | ""           | mblog前端地址(配置跨域使用的,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填),前后不分离版本忽略此参数 |
 
 #### 前端安装
 ##### 源码安装
