@@ -67,12 +67,12 @@ CREATE TABLE `t_sys_config`
 
 CREATE TABLE `t_tag`
 (
+    `id`         INTEGER PRIMARY KEY        NOT NULL,
     `name`       TEXT      NOT NULL,
-    `user_id`    int       NOT NULL,
+    `user_id`    int       default NULL,
     `created`    timestamp NULL default(datetime(CURRENT_TIMESTAMP,'localtime')),
     `updated`    timestamp NULL,
-    `memo_count` int            DEFAULT NULL,
-    `id`         INTEGER PRIMARY KEY        NOT NULL
+    `memo_count` int            DEFAULT NULL
 );
 
 CREATE TABLE `t_user`
@@ -103,7 +103,7 @@ CREATE TABLE `t_user_memo_relation`
 
 
 
-CREATE UNIQUE INDEX `t_tag_tag_IDX` ON `t_tag` (`user_id`);
+CREATE UNIQUE INDEX `t_tag_tag_IDX` ON `t_tag` (`user_id`,`name`);
 CREATE UNIQUE INDEX `t_user_username` ON `t_user` (`username`);
 CREATE UNIQUE INDEX `t_user_T_USER_UNI1` ON `t_user` (`display_name`);
 

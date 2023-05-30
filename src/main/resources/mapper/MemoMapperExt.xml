@@ -33,43 +33,48 @@
     </resultMap>
 
     <update id="setPriority">
-        update t_memo t set t.priority = ((select max(x.priority) from (select * from t_memo)as x)+1) where t.id = #{id}
+        update t_memo set priority = ((select max(x.priority) from (select * from t_memo)as x)+1) where id = #{id}
     </update>
 
     <update id="unSetPriority">
-        update t_memo t set t.priority = 0 where t.id = #{id}
+        update t_memo set priority = 0 where id = #{id}
     </update>
 
 
     <update id="addCommentCount">
-        update t_memo t set t.comment_count = t.comment_count+1 where t.id = #{id}
+        update t_memo set comment_count = comment_count+1 where id = #{id}
     </update>
 
     <update id="addViewCount">
-        update t_memo t set t.view_count = t.view_count+1 where t.id = #{id}
+        update t_memo set view_count = view_count+1 where id = #{id}
     </update>
 
     <update id="addLikeCount">
-        update t_memo t set t.like_count = t.like_count+1 where t.id = #{id}
+        update t_memo set like_count = like_count+1 where id = #{id}
     </update>
 
     <update id="removeLikeCount">
-        update t_memo t set t.like_count = t.like_count - 1 where t.id = #{id} and t.like_count >= 1
+        update t_memo set like_count = like_count - 1 where id = #{id} and like_count >= 1
     </update>
 
     <sql id="listMemoWhere">
         where t.status = 'NORMAL'
         <if test="search != null and search != ''">
-            and t.content like concat('%',#{search},'%')
+            <if test="profile == ''">
+                and t.content like concat('%', #{search}, '%')
+            </if>
+            <if test="profile == 'sqlite'">
+                and t.content like '%'|| #{search} ||'%'
+            </if>
         </if>
         <if test="begin != null and end != null">
             and t.created between #{begin} and #{end}
         </if>
         <if test="login == true">
             and (
-            t.visibility in ('PUBLIC','PROTECT')
-            or t.visibility = 'PRIVATE' and t.user_id = #{currentUserId}
-            )
+                            t.visibility in ('PUBLIC', 'PROTECT')
+                        or t.visibility = 'PRIVATE' and t.user_id = #{currentUserId}
+                    )
             <if test="userId != null and userId > 0">
                 and t.user_id = #{userId}
             </if>
@@ -77,12 +82,17 @@
                 and tumr.memo_id = t.id and tumr.user_id = #{currentUserId} and tumr.fav_type = 'LIKE'
             </if>
             <if test="commented == true">
-                and tc.memo_id  = t.id
+                and tc.memo_id = t.id
                 <if test="mentioned == false">
                     and tc.user_id = #{currentUserId}
                 </if>
                 <if test="mentioned == true">
-                    and tc.mentioned_user_id like concat('%#',#{currentUserId},',%')
+                    <if test="profile == ''">
+                        and tc.mentioned_user_id like concat('%#', #{currentUserId}, ',%')
+                    </if>
+                    <if test="profile == 'sqlite'">
+                        and tc.mentioned_user_id like '%#'|| #{currentUserId} ||',%'
+                    </if>
                 </if>
             </if>
         </if>
@@ -93,12 +103,16 @@
             </if>
         </if>
         <if test="tag != null">
-            and t.tags like concat('%',#{tag},',%')
+            <if test="profile == ''">
+                and t.tags like concat('%', #{tag}, ',%')
+            </if>
+            <if test="profile == 'sqlite'">
+                and t.tags like '%'|| #{tag} ||',%'
+            </if>
         </if>
         <if test="visibility != null">
             and t.visibility = #{visibility}
         </if>
-
     </sql>
 
     <select id="listMemos" resultMap="MemoDtoMap">

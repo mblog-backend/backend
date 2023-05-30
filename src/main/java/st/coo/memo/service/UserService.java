@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import st.coo.memo.common.BizException;
@@ -49,6 +50,8 @@ public class UserService {
     @Resource
     private UserMemoRelationMapperExt userMemoRelationMapperExt;
 
+    @Value("${spring.profiles.active:}")
+    private String profile;
 
     public void register(RegisterUserRequest registerUserRequest) {
 
@@ -155,7 +158,7 @@ public class UserService {
         long total = memoMapperExt.selectCountByQuery(QueryWrapper.create().and(T_MEMO.USER_ID.eq(userId)));
         long liked = userMemoRelationMapperExt.selectCountByQuery(QueryWrapper.create().and(T_USER_MEMO_RELATION.USER_ID.eq(userId))
                 .and(T_USER_MEMO_RELATION.FAV_TYPE.eq("LIKE")));
-        long mentioned = commentMapperExt.countMemoByMentioned(userId);
+        long mentioned = commentMapperExt.countMemoByMentioned(userId,profile);
         long commented = commentMapperExt.countMemoByUser(userId);
 
         TUser user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());

@@ -50,4 +50,6 @@ public class ListMemoRequest {
     @Schema(hidden = true)
     private boolean mentioned;
 
+    @Schema(hidden = true)
+    private String profile;
 }

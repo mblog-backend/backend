@@ -266,6 +266,7 @@ public class MemoService {
         if (isLogin) {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
+        listMemoRequest.setProfile(profile);
         log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
@@ -286,7 +287,7 @@ public class MemoService {
     }
 
 
-    public MemoDto get(int id) {
+    public MemoDto get(int id, boolean count) {
         boolean isLogin = StpUtil.isLogin();
         QueryWrapper queryWrapper = QueryWrapper.create().and(T_MEMO.ID.eq(id));
         if (isLogin) {
@@ -296,7 +297,9 @@ public class MemoService {
             queryWrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name())));
         }
         TMemo tMemo = memoMapper.selectOneByQuery(queryWrapper);
-        memoMapper.addViewCount(id);
+        if (tMemo != null && count){
+            memoMapper.addViewCount(id);
+        }
         return convertToDto(tMemo);
     }
 
