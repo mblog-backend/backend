@@ -17,7 +17,7 @@ steps:
     commands:
       - mvn -DskipTests=true clean package
 
-  - name: docker build
+  - name: docker build prod
     image: plugins/docker
     trigger:
       branch:
@@ -34,7 +34,7 @@ steps:
       password:
         from_secret: docker_password
 
-  - name: docker build
+  - name: docker build prod-allinone
     image: plugins/docker
     trigger:
       branch:
