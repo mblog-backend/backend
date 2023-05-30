@@ -1,6 +1,7 @@
 FROM node:18-alpine as front
 ARG VERSION
 WORKDIR /app
+RUN apk add --no-cache git
 RUN corepack enable
 RUN git clone --depth=1 git@github.com:kingwrcy/mblog-front.git
 WORKDIR mblog-front

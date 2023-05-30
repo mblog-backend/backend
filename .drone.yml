@@ -19,7 +19,7 @@ steps:
 
   - name: docker build prod
     image: plugins/docker
-    trigger:
+    when:
       branch:
         - prod
     settings:
@@ -36,7 +36,7 @@ steps:
 
   - name: docker build prod-allinone
     image: plugins/docker
-    trigger:
+    when:
       branch:
         - prod-allinone
     settings:
