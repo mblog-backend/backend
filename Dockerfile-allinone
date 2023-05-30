@@ -1,0 +1,19 @@
+FROM node:18-alpine as front
+ARG VERSION
+WORKDIR /app
+RUN corepack enable
+RUN git clone --depth=1 git@github.com:kingwrcy/mblog-front.git
+WORKDIR mblog-front
+RUN yarn install --registry=https://registry.npm.taobao.org
+RUN sed -i 's#REPLACE_VERSION_HERE#'"$VERSION"'#g'  /app/.env.docker
+RUN yarn build-only --mode=all
+
+FROM openjdk:17-alpine
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && apk update && apk add busybox-extras
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone  && apk del tzdata
+ADD ./target/memo-0.0.1-SNAPSHOT.jar /app/memo-0.0.1-SNAPSHOT.jar
+ADD ./target/classes/*.properties /app/
+COPY --from=front /app/mblog-front/dist /opt/mblog/static
+ENV JAVA_OPTS="-Xms512m -Xmx512m"
+ENV DB_TYPE="default"
+CMD java $JAVA_OPTS -jar /app/memo-0.0.1-SNAPSHOT.jar --spring.config.location=/app/application-$DB_TYPE.properties

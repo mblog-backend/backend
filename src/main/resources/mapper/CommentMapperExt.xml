@@ -15,7 +15,7 @@
             t.mentioned_user_id like concat('%#', #{userId}, ',%')
         </if>
         <if test="profile == 'sqlite'">
-            t.mentioned_user_id like '%#'||',%'
+            t.mentioned_user_id like '%#'||#{userId}||',%'
         </if>
         ) x
     </select>

@@ -4,6 +4,7 @@ name: mblog-backend
 trigger:
   branch:
     - prod
+    - prod-allinone
   event:
     - push
 
@@ -18,6 +19,9 @@ steps:
 
   - name: docker build
     image: plugins/docker
+    trigger:
+      branch:
+        - prod
     settings:
       mirror: https://mm0rc4mq.mirror.aliyuncs.com
       registry: 192.168.2.33:47382
@@ -25,6 +29,24 @@ steps:
       repo: 192.168.2.33:47382/kingwrcy/mblog-backend
       tags: latest
       cache_from: 192.168.2.33:47382/kingwrcy/mblog-backend:latest
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+
+  - name: docker build
+    image: plugins/docker
+    trigger:
+      branch:
+        - prod-allinone
+    settings:
+      dockerfile: Dockerfile-allinone
+      mirror: https://mm0rc4mq.mirror.aliyuncs.com
+      registry: 192.168.2.33:47382
+      insecure: true
+      repo: 192.168.2.33:47382/kingwrcy/mblog
+      tags: latest
+      cache_from: 192.168.2.33:47382/kingwrcy/mblog:latest
       username:
         from_secret: docker_username
       password:
