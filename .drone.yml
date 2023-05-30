@@ -54,6 +54,9 @@ steps:
 
   - name: start service
     image: appleboy/drone-ssh
+    when:
+      branch:
+        - prod
     settings:
       host:
         - 192.168.2.33
