@@ -61,7 +61,7 @@ public class AWSS3ResourceProvider implements ResourceProvider {
         if (StringUtils.isNotEmpty(domain)) {
             uploadResourceResponse.setUrl(domain + "/" + key);
         } else {
-            uploadResourceResponse.setUrl(String.format("https://s3.%s.amazonaws.com/%s/%s", region, key, publicId));
+            uploadResourceResponse.setUrl(String.format("https://s3.%s.amazonaws.com/%s/%s", region, bucket, key));
         }
         log.info("上传到s3 成功:{}", uploadResourceResponse.getUrl());
         uploadResourceResponse.setSuffix(suffix);
