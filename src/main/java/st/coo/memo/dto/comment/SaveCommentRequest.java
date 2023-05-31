@@ -11,4 +11,8 @@ public class SaveCommentRequest {
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED,title = "memo ID",example = "1")
     private int memoId;
 
+    private String username;
+    private String email;
+    private String link;
+
 }

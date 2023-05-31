@@ -267,11 +267,18 @@ public class MemoService {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
         listMemoRequest.setProfile(profile);
-        log.info(new Gson().toJson(listMemoRequest));
+//        log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
         if (total > 0) {
             list = memoMapper.listMemos(listMemoRequest);
+            for (MemoDto memo : list) {
+                memo.setUnApprovedCommentCount(commentMapperExt.selectCountByQuery(
+                        QueryWrapper.create()
+                                .and(T_COMMENT.MEMO_ID.eq(memo.getId()))
+                                .and(T_COMMENT.USER_ID.lt(0)
+                                        .and(T_COMMENT.APPROVED.eq(0)))));
+            }
         }
         ListMemoResponse response = new ListMemoResponse();
         response.setTotal(total);
@@ -315,6 +322,7 @@ public class MemoService {
         tMemo.setAuthorRole(user.getRole());
         tMemo.setEmail(user.getEmail());
         tMemo.setBio(user.getBio());
+        tMemo.setUnApprovedCommentCount(commentMapperExt.selectCountByQuery(QueryWrapper.create().and(T_COMMENT.USER_ID.lt(0).and(T_COMMENT.APPROVED.eq(0)))));
         String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
         List<TResource> resources = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
         tMemo.setResources(resources.stream().map(r -> {
@@ -327,6 +335,7 @@ public class MemoService {
             item.setSuffix(r.getSuffix());
             item.setPublicId(r.getPublicId());
             item.setFileType(r.getFileType());
+
             return item;
         }).toList());
         return tMemo;

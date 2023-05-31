@@ -51,6 +51,9 @@ public class MemoDto {
     @Schema(title = "评论数量")
     private int commentCount;
 
+    @Schema(title = "未审核评论数量")
+    private long unApprovedCommentCount;
+
     @Schema(title = "点赞数量")
     private int likeCount;
 

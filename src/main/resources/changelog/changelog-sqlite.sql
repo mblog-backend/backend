@@ -128,3 +128,14 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES ('QINIU_PARAM', '{
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES ('STORAGE_TYPE', 'LOCAL', 'LOCAL');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES ('USER_MODEL', 'SINGLE', 'SINGLE');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES ('WEBSITE_TITLE', '', '记录生活');
+
+-- changeset jerry:2
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('THUMBNAIL_SIZE', '', '100,100');
+
+-- changeset jerry:3
+alter table t_comment add column email text;
+alter table t_comment add column link text;
+alter table t_comment add column approved int default 0;
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('ANONYMOUS_COMMENT', '', 'false');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('COMMENT_APPROVED', '', 'true');
+alter table t_user add column default_enable_comment text default 'false';

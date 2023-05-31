@@ -33,7 +33,7 @@ DEMO:
 
 
 <details><summary>Docker镜像</summary>
-
+- [前后不分离镜像](https://hub.docker.com/r/kingwrcy/mblog)
 
 - [前端代码](https://github.com/kingwrcy/mblog-front)
 
@@ -53,7 +53,7 @@ DEMO:
 - 支持博文 登录用户/所有人/只有自己 可见
 - 支持按照标签,时间,内容,可见性进行搜索
 - 支持标签管理(**一键改标签**,删除无用标签等)
-- 支持上传图片(目前支持本地文件存储和七牛云,后续继续添加阿里云/腾讯云等)
+- 支持上传图片(目前支持本地文件存储和七牛云,S3)
 - 支持开发者使用api token
 - 响应式设计,支持pc和手机,支持夜间模式
 - 支持RSS
@@ -144,6 +144,18 @@ docker run --volume=${PWD}/mblog:/opt/mblog \
 --env MYSQL_DB=数据库名称,必填) \
 --env MBLOG_FRONT_DOMAIN=mblog前端地址(配置跨域使用的,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填) \
 kingwrcy/mblog-backend:latest
+```
+
+前后不分离,并且使用sqlite的版本:
+
+```
+docker run --volume=${PWD}/mblog:/opt/mblog \
+--publish=你要映射的后端端口,必填:38321 \
+--restart=always \
+--name=mblog-backend \
+--detach=true \
+--env DB_TYPE=-sqlite \
+kingwrcy/mblog:latest
 ```
 
 - 其中`--volume=${PWD}/upload:/opt/mblog/upload`是图片在本地存储才需要挂载的,如果是七牛云之类的,不需要挂载.

@@ -21,7 +21,6 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping("/add")
-    @SaCheckLogin
     @Operation(summary = "发表评论", description = "发表评论")
     public ResponseDTO<Void> addComment(@RequestBody SaveCommentRequest saveCommentRequest) {
         commentService.addComment(saveCommentRequest);
@@ -41,5 +40,19 @@ public class CommentController {
     @Operation(summary = "评论查询", description = "支持分页查询")
     public ResponseDTO<QueryCommentListResponse> query(@RequestBody QueryCommentListRequest request) {
         return ResponseDTO.success(commentService.query(request));
+    }
+
+    @PostMapping("/singleApprove")
+    @Operation(summary = "单条评论审核通过")
+    public ResponseDTO<QueryCommentListResponse> singleApprove(@RequestParam("id") int id) {
+        commentService.singleApprove(id);
+        return ResponseDTO.success();
+    }
+
+    @PostMapping("/memoApprove")
+    @Operation(summary = "单条memo的所有评论审核通过")
+    public ResponseDTO<QueryCommentListResponse> memoApprove(@RequestParam("id") int id) {
+        commentService.memoApprove(id);
+        return ResponseDTO.success();
     }
 }

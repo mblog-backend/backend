@@ -15,4 +15,7 @@ public class SysConfigConstant {
     public final static String USER_MODEL = "USER_MODEL";
     public final static String CUSTOM_CSS = "CUSTOM_CSS";
     public final static String CUSTOM_JAVASCRIPT = "CUSTOM_JAVASCRIPT";
+    public final static String THUMBNAIL_SIZE = "THUMBNAIL_SIZE";
+    public final static String ANONYMOUS_COMMENT = "ANONYMOUS_COMMENT";
+    public final static String COMMENT_APPROVED = "COMMENT_APPROVED";
 }

@@ -27,4 +27,10 @@ public class CommentDto {
     private String mentioned;
     @Schema(title = "提到的人的USERID,逗号分割")
     private String mentionedUserId;
+    @Schema(title = "匿名人的邮箱")
+    private String email;
+    @Schema(title = "匿名人的链接")
+    private String link;
+    @Schema(title = "是否审核通过")
+    private int approved;
 }

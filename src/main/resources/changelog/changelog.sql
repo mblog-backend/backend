@@ -193,3 +193,16 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('AWSS3_PARAM', '',
 
 -- changeset jerry:24
 alter table t_resource modify column external_link text;
+
+-- changeset jerry:25
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('THUMBNAIL_SIZE', '', '100,100');
+
+-- changeset jerry:26
+alter table t_comment add column email varchar(128);
+alter table t_comment add column link varchar(256);
+alter table t_comment add column approved int default 0;
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('ANONYMOUS_COMMENT', '', 'false');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('COMMENT_APPROVED', '', 'true');
+
+-- changeset jerry:27
+alter table t_user add column default_enable_comment varchar(20) default 'false';

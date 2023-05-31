@@ -25,4 +25,5 @@ public class UserDto {
     private String role;
     private String avatarUrl;
     private String defaultVisibility;
+    private String defaultEnableComment;
 }

@@ -51,7 +51,11 @@ public class SysConfigController {
                 SysConfigConstant.INDEX_WIDTH,
                 SysConfigConstant.USER_MODEL,
                 SysConfigConstant.CUSTOM_CSS,
-                SysConfigConstant.CUSTOM_JAVASCRIPT
+                SysConfigConstant.CUSTOM_JAVASCRIPT,
+                SysConfigConstant.THUMBNAIL_SIZE,
+                SysConfigConstant.ANONYMOUS_COMMENT,
+                SysConfigConstant.COMMENT_APPROVED
+
                 );
         return ResponseDTO.success(sysConfigService.getAll(keys));
     }

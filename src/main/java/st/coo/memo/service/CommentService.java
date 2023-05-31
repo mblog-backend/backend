@@ -54,14 +54,28 @@ public class CommentService {
     private SysConfigService sysConfigService;
 
     public void addComment(SaveCommentRequest saveCommentRequest) {
-        TUser user = userMapperExt.selectOneById(StpUtil.getLoginIdAsInt());
         TMemo memo = memoMapperExt.selectOneById(saveCommentRequest.getMemoId());
-
         boolean openComment = sysConfigService.getBoolean(SysConfigConstant.OPEN_COMMENT);
 
         if (!openComment || !Objects.equals(memo.getEnableComment(), 1)) {
             throw new BizException(ResponseCode.fail, "禁止评论");
         }
+
+        int userId = -1;
+        String authorName = saveCommentRequest.getUsername();
+
+        if (StpUtil.isLogin()) {
+            TUser user = userMapperExt.selectOneById(StpUtil.getLoginIdAsInt());
+            userId = user.getId();
+            authorName = user.getDisplayName();
+        } else {
+            boolean anonymousComment = sysConfigService.getBoolean(SysConfigConstant.ANONYMOUS_COMMENT);
+            if (!anonymousComment) {
+                throw new BizException(ResponseCode.fail, "不支持匿名评论");
+            }
+        }
+
+        boolean commentApproved = sysConfigService.getBoolean(SysConfigConstant.COMMENT_APPROVED);
 
         String content = saveCommentRequest.getContent();
         Matcher matcher = pattern.matcher(content);
@@ -69,27 +83,33 @@ public class CommentService {
         while (matcher.find()) {
             String username = matcher.group().trim();
             if (StringUtils.isNotEmpty(username)) {
-                username= username.substring(1);
+                username = username.substring(1);
                 TUser mentionedUser = userMapperExt.selectOneByQuery(QueryWrapper.create().and(T_USER.DISPLAY_NAME.eq(username)));
                 if (mentionedUser != null) {
                     mentioned.add(new MentionedUser(mentionedUser.getId(), mentionedUser.getDisplayName()));
                 }
             }
         }
+        String names = Joiner.on(",").join(mentioned.stream().map(MentionedUser::getName).collect(Collectors.toList()));
+        String ids = Joiner.on(",#").join(mentioned.stream().map(MentionedUser::getId).collect(Collectors.toList()));
+        TComment comment = new TComment();
+        comment.setContent(content);
+        comment.setMemoId(saveCommentRequest.getMemoId());
+        comment.setUserId(userId);
+        comment.setUserName(authorName);
+        comment.setMentioned(names);
+        comment.setMentionedUserId(StringUtils.isEmpty(ids) ? "" : "#" + ids + ",");
+        comment.setCreated(new Timestamp(System.currentTimeMillis()));
+        comment.setUpdated(new Timestamp(System.currentTimeMillis()));
+        if (!StpUtil.isLogin()) {
+            comment.setEmail(saveCommentRequest.getEmail());
+            comment.setLink(saveCommentRequest.getLink());
+            if (commentApproved) {
+                comment.setApproved(0);
+            }
+        }
 
         transactionTemplate.executeWithoutResult(s -> {
-            String names = Joiner.on(",").join(mentioned.stream().map(MentionedUser::getName).collect(Collectors.toList()));
-            String ids = Joiner.on(",#").join(mentioned.stream().map(MentionedUser::getId).collect(Collectors.toList()));
-
-            TComment comment = new TComment();
-            comment.setContent(content);
-            comment.setMemoId(saveCommentRequest.getMemoId());
-            comment.setUserId(user.getId());
-            comment.setUserName(user.getDisplayName());
-            comment.setMentioned(names);
-            comment.setMentionedUserId(StringUtils.isEmpty(ids) ? "" :"#"+ ids + ",");
-            comment.setCreated(new Timestamp(System.currentTimeMillis()));
-            comment.setUpdated(new Timestamp(System.currentTimeMillis()));
             Assert.isTrue(memoMapperExt.addCommentCount(memo.getId()) == 1, "更新评论数量异常");
             Assert.isTrue(commentMapperExt.insertSelective(comment) == 1, "写入评论异常");
         });
@@ -109,7 +129,9 @@ public class CommentService {
 
     public QueryCommentListResponse query(QueryCommentListRequest request) {
         Page<TComment> paginate = commentMapperExt.paginate(request.getPage(), request.getSize(), QueryWrapper.create()
-                .and(T_COMMENT.MEMO_ID.eq(request.getMemoId())).orderBy("created"));
+                .and(T_COMMENT.MEMO_ID.eq(request.getMemoId()))
+                .and(T_COMMENT.USER_ID.gt(0).or(T_COMMENT.USER_ID.lt(0).and(T_COMMENT.APPROVED.eq(1))).when(!StpUtil.hasRole("ADMIN")))
+                .orderBy("created"));
         QueryCommentListResponse response = new QueryCommentListResponse();
         response.setList(paginate.getRecords().stream().map(r -> {
             CommentDto commentDto = new CommentDto();
@@ -120,5 +142,18 @@ public class CommentService {
         response.setTotalPage(paginate.getTotalPage());
         return response;
     }
+
+    public void singleApprove(int commentId) {
+        TComment comment = new TComment();
+        comment.setApproved(1);
+        commentMapperExt.updateByQuery(comment, true, QueryWrapper.create().and(T_COMMENT.ID.eq(commentId)).and(T_COMMENT.USER_ID.lt(0)));
+    }
+
+    public void memoApprove(int memoId) {
+        TComment comment = new TComment();
+        comment.setApproved(1);
+        commentMapperExt.updateByQuery(comment, true, QueryWrapper.create().and(T_COMMENT.MEMO_ID.eq(memoId)).and(T_COMMENT.USER_ID.lt(0)));
+    }
+
 
 }

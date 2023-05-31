@@ -23,4 +23,7 @@ public class UpdateUserRequest {
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, title = "默认的可见性", example = "PUBLIC")
     private String defaultVisibility;
+
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, title = "默认是否可以评论", example = "PUBLIC")
+    private String defaultEnableComment;
 }

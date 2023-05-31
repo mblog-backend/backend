@@ -38,6 +38,15 @@ public class TComment implements Serializable {
     
     private String mentionedUserId;
 
+    
+    private String email;
+
+    
+    private String link;
+
+    
+    private Integer approved;
+
     public Integer getId() {
         return id;
     }
@@ -108,6 +117,30 @@ public class TComment implements Serializable {
 
     public void setMentionedUserId(String mentionedUserId) {
         this.mentionedUserId = mentionedUserId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public Integer getApproved() {
+        return approved;
+    }
+
+    public void setApproved(Integer approved) {
+        this.approved = approved;
     }
 
 }
