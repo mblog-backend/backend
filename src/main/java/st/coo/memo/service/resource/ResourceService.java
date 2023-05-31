@@ -9,7 +9,9 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -17,6 +19,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import st.coo.memo.common.BizException;
 import st.coo.memo.common.ResponseCode;
@@ -83,7 +86,7 @@ public class ResourceService implements ApplicationContextAware {
         String parentDir = DateFormatUtils.format(new Date(), "yyyyMMdd");
         String targetPath = tempPath + File.separator + parentDir + File.separator + fileName;
         byte[] content;
-        String fileType;
+        String fileType = "";
         try {
             FileUtil.mkParentDirs(targetPath);
             content = multipartFile.getBytes();
@@ -95,6 +98,10 @@ public class ResourceService implements ApplicationContextAware {
             throw new BizException(ResponseCode.fail, "上传文件异常:" + e.getLocalizedMessage());
         }
         UploadResourceResponse uploadResourceResponse = provider.upload(targetPath,publicId);
+
+        if (StringUtils.isEmpty(fileType)){
+            fileType = "image/"+ FileUtil.getSuffix(targetPath);
+        }
 
         TResource tResource = new TResource();
         tResource.setPublicId(publicId);

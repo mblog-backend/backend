@@ -141,6 +141,7 @@ public class UserService {
         response.setRole(user.getRole());
         response.setUserId(user.getId());
         response.setDefaultVisibility(user.getDefaultVisibility());
+        response.setDefaultEnableComment(user.getDefaultEnableComment());
         return response;
     }
 

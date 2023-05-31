@@ -9,4 +9,5 @@ public class LoginResponse {
     private String role;
     private int userId;
     private String defaultVisibility;
+    private String defaultEnableComment;
 }
