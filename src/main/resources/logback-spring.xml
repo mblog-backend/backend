@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="log_path" value="/opt/mblog/logs/"/>
+    <substitutionProperty name="default_pattern" value="%date %-5level [%thread - %X{traceNo}] [%logger{0}:%line] - %msg%n" />
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder >
+            <charset>UTF-8</charset>
+            <pattern>${default_pattern}</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender" >
+        <file>${log_path}info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log_path}info.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${default_pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-APPENDER"/>
+    </root>
+
+</configuration>
