@@ -46,6 +46,15 @@ public class TUser implements Serializable {
 
     
     private String defaultVisibility;
+    private String defaultEnableComment;
+
+    public String getDefaultEnableComment() {
+        return defaultEnableComment;
+    }
+
+    public void setDefaultEnableComment(String defaultEnableComment) {
+        this.defaultEnableComment = defaultEnableComment;
+    }
 
     public Integer getId() {
         return id;
