@@ -26,7 +26,7 @@ DEMO:
 
 #### 微信交流群
 
-![](https://cdn.kingwrcy.cn/mblog/202306152222207wqVWQiqCePxzKVFvRPPI)
+![](https://cdn.kingwrcy.cn/mblog/202306152222207wqVWQiqCePxzKVFvRPPI?imageMogr2/thumbnail/400x800/format/webp/quality/75)
 
 
 <details><summary>图片预览</summary>
