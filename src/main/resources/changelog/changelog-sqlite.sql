@@ -139,3 +139,6 @@ alter table t_comment add column approved int default 0;
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('ANONYMOUS_COMMENT', '', 'false');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('COMMENT_APPROVED', '', 'true');
 alter table t_user add column default_enable_comment text default 'false';
+
+-- changeset jerry:4
+update t_sys_config set value = '60rem',default_value='60rem' where `key` = 'INDEX_WIDTH';
