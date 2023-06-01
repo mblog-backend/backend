@@ -121,7 +121,10 @@ public class MemoService {
         } else {
             lines.set(0, firstLine);
         }
-        return Joiner.on("\n").join(lines);
+        String result = Joiner.on("\n").join(lines);
+        result = result.replaceAll("\\n{2,}","\n");
+        result= result.replaceAll("\n","\n\n");
+        return result;
     }
 
     private void checkContentAndResource(String content, List<String> resourceId) {
