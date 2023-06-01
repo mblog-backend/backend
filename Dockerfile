@@ -4,5 +4,5 @@ RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && ech
 ADD ./target/memo-0.0.1-SNAPSHOT.jar /app/memo-0.0.1-SNAPSHOT.jar
 ADD ./target/classes/*.properties /app/
 ENV JAVA_OPTS="-Xms512m -Xmx512m"
-ENV DB_TYPE="default"
-CMD java $JAVA_OPTS -jar /app/memo-0.0.1-SNAPSHOT.jar --spring.config.location=/app/application-$DB_TYPE.properties
+ENV DB_TYPE=""
+CMD java $JAVA_OPTS -jar /app/memo-0.0.1-SNAPSHOT.jar --spring.config.location=/app/application$DB_TYPE.properties
