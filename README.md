@@ -19,7 +19,17 @@ DEMO:
 
 [mblog.coo.st](https://mblog.coo.st)
 
-[mblog.cooolr.online(开放注册)](https://mblog.cooolr.online/)
+[mblog.cooolr.online(开放注册)](https://mblog.cooolr.online/) 基于java+mysql,前后分离
+
+[m.kingwrcy.cn(开放注册,匿名评论等)](https://m.kingwrcy.cn) 基于java+sqlite,前后不分离,内存128MB
+
+
+<details>
+<summary>微信交流群</summary>
+
+![微信交流群](https://cdn.kingwrcy.cn/mblog/202306152222207wqVWQiqCePxzKVFvRPPI)
+
+</details>
 
 <details><summary>图片预览</summary>
 
