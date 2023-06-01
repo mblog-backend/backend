@@ -16,7 +16,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone  && apk del tzdata
 ADD ./target/memo-0.0.1-SNAPSHOT.jar /app/memo-0.0.1-SNAPSHOT.jar
 ADD ./target/classes/*.properties /app/
-COPY --from=front /app/mblog-front/dist /opt/mblog/static
+COPY --from=front /app/mblog-front/dist /app/static
 ENV JAVA_OPTS="-Xms512m -Xmx512m"
 ENV DB_TYPE=""
 CMD java $JAVA_OPTS -jar /app/memo-0.0.1-SNAPSHOT.jar --spring.config.location=/app/application$DB_TYPE.properties
