@@ -162,17 +162,17 @@ kingwrcy/mblog:latest
 - 开启了API文档的,API文档访问地址为`http://服务端IP:服务端端口/api.html`
 
 
-| 非必填环境变量 | 默认值               | 解释                                                                    |
-|---------|-------------------|-----------------------------------------------------------------------|
-| ENABLE_SWAGGER     | false             | 需要开启API文档的才配置,否则不需要配置,选填                                              |
+| 非必填环境变量 | 默认值                 | 解释                                                                    |
+|---------|---------------------|-----------------------------------------------------------------------|
+| ENABLE_SWAGGER     | false               | 需要开启API文档的才配置,否则不需要配置,选填                                              |
 | JAVA_OPTS     | "-Xms512m -Xmx512m" | 内存设置,建议最低不要低于256m,默认512m                                              |
-| DB_TYPE     | ""                | 数据库类型,可选 为空时默认mysql,`-sqlite`:sqlite,注意前面有`-`                         |
-| MYSQL_USER     | ""                | 数据库用户名,DB_TYPE为空时必填                                                   |
-| MYSQL_PASS     | ""                | 数据库密码,DB_TYPE为空时必填                                                    |
-| MYSQL_URL     | ""                | 格式:`数据库地址:端口`,前面没有http(s) ,DB_TYPE为空时必填                               |
-| MYSQL_DB     | ""                | 数据库名称 ,DB_TYPE为空时必填                                                   |
-| MBLOG_FRONT_DOMAIN     | ""                | mblog前端地址(配置跨域使用的,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填),前后不分离版本忽略此参数 |
-| AUTO_EXECUTE_SQL     | true             | 自动执行SQL脚本,默认自动执行,如果已经提前执行了,这里配置为false                                 |
+| DB_TYPE     | 无                   | 数据库类型,可选 为空时默认mysql,`-sqlite`:sqlite,注意前面有`-`                         |
+| MYSQL_USER     | 无                   | 数据库用户名,DB_TYPE为空时必填                                                   |
+| MYSQL_PASS     | 无                   | 数据库密码,DB_TYPE为空时必填                                                    |
+| MYSQL_URL     | 无                   | 格式:`数据库地址:端口`,前面没有http(s) ,DB_TYPE为空时必填                               |
+| MYSQL_DB     | 无                   | 数据库名称 ,DB_TYPE为空时必填                                                   |
+| MBLOG_FRONT_DOMAIN     | 无                   | mblog前端地址(配置跨域使用的,带http(s),有端口带端口,docker启动的这里是宿主机的IP,必填),前后不分离版本忽略此参数 |
+| AUTO_EXECUTE_SQL     | true                | 自动执行SQL脚本,默认自动执行,如果已经提前执行了,这里配置为false                                 |
 
 #### 前端安装
 ##### 源码安装

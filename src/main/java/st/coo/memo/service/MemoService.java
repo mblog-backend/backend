@@ -136,7 +136,8 @@ public class MemoService {
         }
         String result = Joiner.on("\n").join(lines);
         result = result.replaceAll("\\n{2,}", "\n");
-        result = result.replaceAll("[^|]\n", "\n\n");
+        result = result.replaceAll("\n", "\n\n");
+        result = result.replaceAll("\\|\n\n", "|\n");
         return result;
     }
 
