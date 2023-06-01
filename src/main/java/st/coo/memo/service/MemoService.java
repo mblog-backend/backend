@@ -72,8 +72,8 @@ public class MemoService {
     @Resource
     private CommentMapperExt commentMapperExt;
 
-    @Value("${spring.profiles.active:}")
-    private String profile;
+    @Value("${DB_TYPE:mysql}")
+    private String dbType;
 
 
     @Resource
@@ -328,7 +328,7 @@ public class MemoService {
         if (isLogin) {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
-        listMemoRequest.setProfile(profile);
+        listMemoRequest.setDbType(dbType);
 //        log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
@@ -437,7 +437,7 @@ public class MemoService {
         statisticsResponse.setTotalDays(totalDays);
 
         List<Row> rows = Lists.newArrayList();
-        if (Objects.equals(profile, "sqlite")) {
+        if (Objects.equals(dbType, "sqlite")) {
             rows = Db.selectListBySql("select date(created/1000,'unixepoch') as day,count(1) as count from t_memo where " +
                             "user_id = ? and created between ? and ? group by date(created/1000,'unixepoch') order by date(created/1000,'unixepoch') desc",
                     userId, request.getBegin(), request.getEnd());

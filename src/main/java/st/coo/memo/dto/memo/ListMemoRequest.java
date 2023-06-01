@@ -2,12 +2,9 @@ package st.coo.memo.dto.memo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import st.coo.memo.common.MemoStatus;
 import st.coo.memo.common.Visibility;
 
-import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 
 @Data
 public class ListMemoRequest {
@@ -51,5 +48,5 @@ public class ListMemoRequest {
     private boolean mentioned;
 
     @Schema(hidden = true)
-    private String profile;
+    private String dbType;
 }

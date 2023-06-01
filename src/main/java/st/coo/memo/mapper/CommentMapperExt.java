@@ -7,5 +7,5 @@ import st.coo.memo.entity.TComment;
 public interface CommentMapperExt extends BaseMapper<TComment> {
     long countMemoByUser(int userId);
 
-    long countMemoByMentioned(@Param("userId") int userId, @Param("profile") String profile);
+    long countMemoByMentioned(@Param("userId") int userId, @Param("dbType") String dbType);
 }
