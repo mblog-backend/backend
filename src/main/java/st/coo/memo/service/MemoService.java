@@ -3,15 +3,23 @@ package st.coo.memo.service;
 import cn.dev33.satoken.stp.StpUtil;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.row.Db;
 import com.mybatisflex.core.row.Row;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -24,12 +32,11 @@ import st.coo.memo.dto.resource.ResourceDto;
 import st.coo.memo.entity.*;
 import st.coo.memo.mapper.*;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static st.coo.memo.entity.table.Tables.*;
@@ -68,6 +75,12 @@ public class MemoService {
     @Value("${spring.profiles.active:}")
     private String profile;
 
+
+    @Resource
+    private HttpClient httpClient;
+
+    @Resource(name = "taskExecutor")
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Transactional
     public void remove(int id) {
@@ -122,8 +135,8 @@ public class MemoService {
             lines.set(0, firstLine);
         }
         String result = Joiner.on("\n").join(lines);
-        result = result.replaceAll("\\n{2,}","\n");
-        result= result.replaceAll("\n","\n\n");
+        result = result.replaceAll("\\n{2,}", "\n");
+        result = result.replaceAll("[^|]\n", "\n\n");
         return result;
     }
 
@@ -177,6 +190,51 @@ public class MemoService {
             }
             return true;
         });
+
+        threadPoolTaskExecutor.execute(()->{
+            notifyWebhook(tMemo);
+        });
+    }
+
+
+    public void notifyWebhook(TMemo memo) {
+        String url = sysConfigService.getString(SysConfigConstant.WEB_HOOK_URL);
+        String token = sysConfigService.getString(SysConfigConstant.WEB_HOOK_TOKEN);
+
+        if (Objects.equals(memo.getVisibility(), Visibility.PUBLIC.name()) && StringUtils.hasText(url)) {
+            HttpPost request = new HttpPost(url);
+
+            if (StringUtils.hasText(token)){
+                request.setHeader("token", token);
+            }
+
+            request.setHeader("content-type", "application/json;charset=utf8");
+
+            TUser user = userMapper.selectOneById(memo.getUserId());
+            String backendUrl = sysConfigService.getString(SysConfigConstant.DOMAIN);
+
+            List<TResource> list = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
+            List<String> resources = list.stream().map(ele -> "%s/api/resource/%s".formatted(backendUrl, ele.getPublicId())).toList();
+            Gson gson = new Gson();
+
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("content", memo.getContent());
+            map.put("tags", memo.getTags());
+            map.put("created", memo.getCreated());
+            map.put("authorName", user.getDisplayName());
+            map.put("resources", resources);
+            String body = gson.toJson(map);
+            log.info("发送webhook到{},body:{}", url, body);
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            try {
+                request.setEntity(new StringEntity(body));
+                HttpResponse httpResponse = httpClient.execute(request);
+                EntityUtils.consumeQuietly(httpResponse.getEntity());
+                log.info("发送webhook成功,返回码:{},耗时:{}ms", httpResponse.getStatusLine().getStatusCode(), stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            } catch (IOException e) {
+                log.error("发送webhook异常", e);
+            }
+        }
     }
 
 
@@ -291,7 +349,7 @@ public class MemoService {
         if (isLogin && listMemoRequest.isCommented() && listMemoRequest.isMentioned()) {
             TUser tUser = new TUser();
             tUser.setLastClickedMentioned(Timestamp.valueOf(LocalDateTime.now()));
-            userMapper.updateByQuery(tUser,true,QueryWrapper.create().and(T_USER.ID.eq(StpUtil.getLoginIdAsInt())));
+            userMapper.updateByQuery(tUser, true, QueryWrapper.create().and(T_USER.ID.eq(StpUtil.getLoginIdAsInt())));
         }
         return response;
     }
@@ -307,7 +365,7 @@ public class MemoService {
             queryWrapper.and(T_MEMO.VISIBILITY.in(Lists.newArrayList(Visibility.PUBLIC.name())));
         }
         TMemo tMemo = memoMapper.selectOneByQuery(queryWrapper);
-        if (tMemo != null && count){
+        if (tMemo != null && count) {
             memoMapper.addViewCount(id);
         }
         return convertToDto(tMemo);
@@ -325,7 +383,7 @@ public class MemoService {
         tMemo.setAuthorRole(user.getRole());
         tMemo.setEmail(user.getEmail());
         tMemo.setBio(user.getBio());
-        tMemo.setUnApprovedCommentCount(commentMapperExt.selectCountByQuery(QueryWrapper.create().and(T_COMMENT.USER_ID.lt(0).and(T_COMMENT.APPROVED.eq(0)))));
+        tMemo.setUnApprovedCommentCount(commentMapperExt.selectCountByQuery(QueryWrapper.create().and(T_COMMENT.MEMO_ID.eq(memo.getId())).and(T_COMMENT.USER_ID.lt(0).and(T_COMMENT.APPROVED.eq(0)))));
         String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
         List<TResource> resources = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
         tMemo.setResources(resources.stream().map(r -> {
@@ -378,11 +436,11 @@ public class MemoService {
         statisticsResponse.setTotalDays(totalDays);
 
         List<Row> rows = Lists.newArrayList();
-        if (Objects.equals(profile,"sqlite")){
+        if (Objects.equals(profile, "sqlite")) {
             rows = Db.selectListBySql("select date(created/1000,'unixepoch') as day,count(1) as count from t_memo where " +
                             "user_id = ? and created between ? and ? group by date(created/1000,'unixepoch') order by date(created/1000,'unixepoch') desc",
                     userId, request.getBegin(), request.getEnd());
-        }else{
+        } else {
             rows = Db.selectListBySql("select date(created) as day,count(1) as count from t_memo where " +
                             "user_id = ? and created between ? and ? group by date(created) order by date(created) desc",
                     userId, request.getBegin(), request.getEnd());
@@ -400,7 +458,7 @@ public class MemoService {
     @Transactional
     public void makeRelation(MemoRelationRequest request) {
         boolean openLike = sysConfigService.getBoolean(SysConfigConstant.OPEN_LIKE);
-        if (!openLike){
+        if (!openLike) {
             throw new BizException(ResponseCode.fail, "禁止点赞");
         }
 
@@ -426,7 +484,6 @@ public class MemoService {
             Assert.isTrue(memoMapper.removeLikeCount(request.getMemoId()) == 1, "更新like数量异常");
         }
     }
-
 
 
 }

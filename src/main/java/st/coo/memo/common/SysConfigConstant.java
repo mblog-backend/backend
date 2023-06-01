@@ -18,4 +18,6 @@ public class SysConfigConstant {
     public final static String THUMBNAIL_SIZE = "THUMBNAIL_SIZE";
     public final static String ANONYMOUS_COMMENT = "ANONYMOUS_COMMENT";
     public final static String COMMENT_APPROVED = "COMMENT_APPROVED";
+    public final static String WEB_HOOK_URL = "WEB_HOOK_URL";
+    public final static String WEB_HOOK_TOKEN = "WEB_HOOK_TOKEN";
 }

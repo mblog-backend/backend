@@ -81,10 +81,6 @@ DEMO:
 - [Unocss](https://github.com/unocss/unocss)
 - [NaiveUI](https://www.naiveui.com/zh-CN/light)
 
-### 微信交流群
-
-![](https://images.kingwrcy.cn/blog/0746f8eecba91e8a384becbb0e948e4.jpg)
-
 ## 部署
 
 [不会命令行安装的看这里,通过Nas的Docker管理界面安装](https://github.com/kingwrcy/mblog-backend/blob/main/doc/gui_install.md)

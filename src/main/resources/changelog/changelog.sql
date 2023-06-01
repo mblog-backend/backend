@@ -209,3 +209,6 @@ alter table t_user add column default_enable_comment varchar(20) default 'false'
 
 -- changeset jerry:28
 update t_sys_config set value = '60rem',default_value='60rem' where `key` = 'INDEX_WIDTH';
+-- changeset jerry:29
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_URL', '', '');
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_TOKEN', '', '');
