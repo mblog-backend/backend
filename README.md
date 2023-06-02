@@ -24,6 +24,16 @@ DEMO:
 [m.kingwrcy.cn(开放注册,匿名评论等)](https://m.kingwrcy.cn) 基于java+sqlite,前后不分离,内存128MB
 
 
+## tg机器人
+
+感谢[@cooolr](https://github.com/cooolr),开源地址在[这里](https://github.com/mblog-backend/mblog-telegram-bot)
+
+#### 特性
+
+1. 支持图文混发，支持多图
+2. 支持telegram格式链接
+
+
 #### 微信交流群
 
 ![](https://cdn.kingwrcy.cn/mblog/202306152222207wqVWQiqCePxzKVFvRPPI?imageMogr2/thumbnail/400x800/format/webp/quality/75)
@@ -75,7 +85,7 @@ DEMO:
 - ~~支持sqlite~~ v1.0.8已支持
 - ~~争取提供前后不分离版本~~ v1.0.8已支持
 - 提供chrome插件,一键转发到mblog
-- 提供可自部署的tg机器人,一键转发到mblog
+- ~~提供可自部署的tg机器人,一键转发到mblog~~ 已经由[@cooolr](https://github.com/cooolr)帮忙实现了,欢迎试用
 - ......
 
 ## 使用到的框架
