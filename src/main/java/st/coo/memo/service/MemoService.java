@@ -99,6 +99,7 @@ public class MemoService {
         }
         resourceMapper.deleteByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(id)));
         memoMapper.deleteById(id);
+        commentMapperExt.deleteByQuery(QueryWrapper.create().and(T_COMMENT.MEMO_ID.eq(id)));
     }
 
     public void setMemoPriority(int id, boolean set) {
@@ -137,7 +138,8 @@ public class MemoService {
         String result = Joiner.on("\n").join(lines);
         result = result.replaceAll("\\n{2,}", "\n");
         result = result.replaceAll("\n", "\n\n");
-        result = result.replaceAll("\\|\n\n", "|\n");
+        result = result.replaceAll("\\|\\s+\n\n", "|\n");
+        result = result.replaceAll("```\\s+\n\n", "```\n");
         return result;
     }
 

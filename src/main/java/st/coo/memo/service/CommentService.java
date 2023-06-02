@@ -106,6 +106,8 @@ public class CommentService {
             comment.setLink(saveCommentRequest.getLink());
             if (commentApproved) {
                 comment.setApproved(0);
+            }else{
+                comment.setApproved(1);
             }
         }
 
