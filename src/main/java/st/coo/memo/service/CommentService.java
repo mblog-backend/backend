@@ -122,7 +122,7 @@ public class CommentService {
         TUser user = userMapperExt.selectOneById(StpUtil.getLoginIdAsInt());
         TComment comment = commentMapperExt.selectOneById(id);
         TMemo memo = memoMapperExt.selectOneById(comment.getMemoId());
-        if (Objects.equals(user.getRole(), "ADMIN") || !Objects.equals(memo.getUserId(), user.getId())) {
+        if (!Objects.equals(user.getRole(), "ADMIN") && !Objects.equals(memo.getUserId(), user.getId())) {
             throw new BizException(ResponseCode.fail, "只能删除自己发的memo的评论");
         }
         commentMapperExt.deleteById(id);
