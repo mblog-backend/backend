@@ -11,7 +11,7 @@
     <select id="countMemoByMentioned" resultType="long">
         select count(1) from (select distinct t.memo_id
                               from t_comment t where
-        <if test="dbType == 'mysql'">
+        <if test="dbType == ''">
             t.mentioned_user_id like concat('%#', #{userId}, ',%')
         </if>
         <if test="dbType == '-sqlite'">

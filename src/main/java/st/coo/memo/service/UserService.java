@@ -50,7 +50,7 @@ public class UserService {
     @Resource
     private UserMemoRelationMapperExt userMemoRelationMapperExt;
 
-    @Value("${DB_TYPE:mysql}")
+    @Value("${DB_TYPE:}")
     private String dbType;
 
     public void register(RegisterUserRequest registerUserRequest) {

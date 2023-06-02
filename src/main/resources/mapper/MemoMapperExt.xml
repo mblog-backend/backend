@@ -60,7 +60,7 @@
     <sql id="listMemoWhere">
         where t.status = 'NORMAL'
         <if test="search != null and search != ''">
-            <if test="dbType == 'mysql'">
+            <if test="dbType == ''">
                 and t.content like concat('%', #{search}, '%')
             </if>
             <if test="dbType == '-sqlite'">
@@ -87,7 +87,7 @@
                     and tc.user_id = #{currentUserId}
                 </if>
                 <if test="mentioned == true">
-                    <if test="dbType == 'mysql'">
+                    <if test="dbType == ''">
                         and tc.mentioned_user_id like concat('%#', #{currentUserId}, ',%')
                     </if>
                     <if test="dbType == '-sqlite'">
@@ -103,7 +103,7 @@
             </if>
         </if>
         <if test="tag != null">
-            <if test="dbType == 'mysql'">
+            <if test="dbType == ''">
                 and t.tags like concat('%', #{tag}, ',%')
             </if>
             <if test="dbType == '-sqlite'">

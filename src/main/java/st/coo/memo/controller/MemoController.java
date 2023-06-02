@@ -24,17 +24,15 @@ public class MemoController {
     @PostMapping("/save")
     @SaCheckLogin
     @Operation(summary = "发布memo", description = "发布memo")
-    public ResponseDTO<Void> create(@RequestBody @Validated SaveMemoRequest saveMemoRequest) {
-        memoService.save(saveMemoRequest);
-        return ResponseDTO.success();
+    public ResponseDTO<Integer> create(@RequestBody @Validated SaveMemoRequest saveMemoRequest) {
+        return ResponseDTO.success(memoService.save(saveMemoRequest));
     }
 
     @PostMapping("/update")
     @SaCheckLogin
     @Operation(summary = "修改memo", description = "修改memo")
-    public ResponseDTO<Void> update(@RequestBody @Validated SaveMemoRequest updateMemoRequest) {
-        memoService.update(updateMemoRequest);
-        return ResponseDTO.success();
+    public ResponseDTO<Integer> update(@RequestBody @Validated SaveMemoRequest updateMemoRequest) {
+        return ResponseDTO.success(memoService.update(updateMemoRequest));
     }
 
     @PostMapping("/remove")

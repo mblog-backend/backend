@@ -72,7 +72,7 @@ public class MemoService {
     @Resource
     private CommentMapperExt commentMapperExt;
 
-    @Value("${DB_TYPE:mysql}")
+    @Value("${DB_TYPE:}")
     private String dbType;
 
 
@@ -147,7 +147,7 @@ public class MemoService {
         }
     }
 
-    public void save(SaveMemoRequest saveMemoRequest) {
+    public Integer save(SaveMemoRequest saveMemoRequest) {
         checkContentAndResource(saveMemoRequest.getContent(), saveMemoRequest.getPublicIds());
         List<String> tags = parseTags(saveMemoRequest.getContent());
         String content = saveMemoRequest.getContent();
@@ -195,6 +195,8 @@ public class MemoService {
         threadPoolTaskExecutor.execute(()->{
             notifyWebhook(tMemo);
         });
+
+        return tMemo.getId();
     }
 
 
@@ -239,7 +241,7 @@ public class MemoService {
     }
 
 
-    public void update(SaveMemoRequest updateMemoRequest) {
+    public Integer update(SaveMemoRequest updateMemoRequest) {
         checkContentAndResource(updateMemoRequest.getContent(), updateMemoRequest.getPublicIds());
         TMemo existMemo = memoMapper.selectOneById(updateMemoRequest.getId());
         if (existMemo == null) {
@@ -301,6 +303,7 @@ public class MemoService {
 
             return true;
         });
+        return existMemo.getId();
     }
 
     private List<String> parseTags(String content) {

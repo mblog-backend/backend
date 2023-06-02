@@ -2,6 +2,8 @@ package st.coo.memo.common;
 
 import com.mybatisflex.core.audit.AuditManager;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Configuration
 public class MyBatisFlexConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger("mybatis-flex-sql");
 
     public MyBatisFlexConfig() {
 //        //开启审计功能
@@ -16,7 +19,7 @@ public class MyBatisFlexConfig {
 //
 //        //设置 SQL 审计收集器
 //        AuditManager.setMessageCollector(auditMessage ->
-//                log.info("{},{}ms,{}", auditMessage.getFullSql(), auditMessage.getElapsedTime(), auditMessage.getQueryCount())
+//                logger.info("{},{}ms,hit count:{}", auditMessage.getFullSql(), auditMessage.getElapsedTime(),auditMessage.getQueryCount())
 //        );
     }
 
