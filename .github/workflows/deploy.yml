@@ -56,7 +56,7 @@ jobs:
             ${{steps.version_step.outputs.version}}
 
       - name: Build and push Docker allinone images
-        id: docker_build
+        id: docker_build_allinone
         uses: docker/build-push-action@v4
         with:
           push: true
