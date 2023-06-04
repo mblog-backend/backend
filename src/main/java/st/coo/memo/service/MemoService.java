@@ -135,12 +135,7 @@ public class MemoService {
         } else {
             lines.set(0, firstLine);
         }
-        String result = Joiner.on("\n").join(lines);
-        result = result.replaceAll("\\n{2,}", "\n");
-        result = result.replaceAll("\n", "\n\n");
-        result = result.replaceAll("\\|\\s+\n\n", "|\n");
-        result = result.replaceAll("```\\s+\n\n", "```\n");
-        return result;
+        return Joiner.on("\n").join(lines);
     }
 
     private void checkContentAndResource(String content, List<String> resourceId) {
