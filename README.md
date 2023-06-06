@@ -28,6 +28,14 @@ DEMO:
 
 感谢[@cooolr](https://github.com/cooolr),开源地址在[这里](https://github.com/mblog-backend/mblog-telegram-bot)
 
+## 浏览器插件
+
+[浏览器插件](https://github.com/mblog-backend/browser-plugin)
+
+目前只支持Chrome浏览器
+
+支持一键转发文本
+
 #### 特性
 
 1. 支持图文混发，支持多图
