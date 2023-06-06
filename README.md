@@ -33,6 +33,9 @@ DEMO:
 1. 支持图文混发，支持多图
 2. 支持telegram格式链接
 
+#### [tg频道](https://t.me/mblog_backend)
+
+#### [Nas安装教程](https://post.smzdm.com/p/agqerg43/?zdm_ss=Android_3635293780_&send_by=3635293780&from=singlemessage&invite_code=zdm4tzvf9ainv)
 
 #### 微信交流群
 
