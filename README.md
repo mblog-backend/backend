@@ -24,6 +24,10 @@ DEMO:
 [m.kingwrcy.cn(开放注册,匿名评论等)](https://m.kingwrcy.cn) 基于java+sqlite,前后不分离,内存128MB
 
 
+## 嵌入其他博客系统
+
+比如wordpress,hugo,[教程看这里](https://github.com/mblog-backend/backend/tree/main/doc/static.md)
+
 ## tg机器人
 
 感谢[@cooolr](https://github.com/cooolr),开源地址在[这里](https://github.com/mblog-backend/mblog-telegram-bot)
