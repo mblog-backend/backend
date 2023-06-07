@@ -212,3 +212,7 @@ update t_sys_config set value = '60rem',default_value='60rem' where `key` = 'IND
 -- changeset jerry:29
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_URL', '', '');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_TOKEN', '', '');
+
+
+-- changeset jerry:30
+alter table t_memo add column `source` varchar(30) default  'web';

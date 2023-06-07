@@ -158,6 +158,7 @@ public class MemoService {
         tMemo.setContent(replaceFirstLine(content, tags).trim());
         tMemo.setCreated(new Timestamp(System.currentTimeMillis()));
         tMemo.setUpdated(new Timestamp(System.currentTimeMillis()));
+        tMemo.setSource(saveMemoRequest.getSource());
         List<TTag> existsTagList = tags.size() == 0 ? Lists.newArrayList() : tagMapper.selectListByQuery(QueryWrapper.create().
                 and(T_TAG.NAME.in(tags)).
                 and(T_TAG.USER_ID.eq(StpUtil.getLoginIdAsInt())));
@@ -437,7 +438,7 @@ public class MemoService {
         statisticsResponse.setTotalDays(totalDays);
 
         List<Row> rows = Lists.newArrayList();
-        if (Objects.equals(dbType, "sqlite")) {
+        if (Objects.equals(dbType, "-sqlite")) {
             rows = Db.selectListBySql("select date(created/1000,'unixepoch') as day,count(1) as count from t_memo where " +
                             "user_id = ? and created between ? and ? group by date(created/1000,'unixepoch') order by date(created/1000,'unixepoch') desc",
                     userId, request.getBegin(), request.getEnd());

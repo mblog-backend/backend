@@ -23,4 +23,7 @@ public class SaveMemoRequest {
 
     @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED,description = "是否可以评论",example = "false")
     private boolean enableComment;
+
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED,description = "来源,自定义",example = "web",defaultValue = "web")
+    private String source;
 }

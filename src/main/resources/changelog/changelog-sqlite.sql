@@ -144,3 +144,6 @@ alter table t_user add column default_enable_comment text default 'false';
 update t_sys_config set value = '60rem',default_value='60rem' where `key` = 'INDEX_WIDTH';
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_URL', '', '');
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_TOKEN', '', '');
+
+-- changeset jerry:5
+alter table t_memo add column `source` TEXT default  'web';
