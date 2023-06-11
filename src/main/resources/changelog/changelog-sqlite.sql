@@ -147,3 +147,6 @@ INSERT INTO t_sys_config (`key`, value, default_value) VALUES('WEB_HOOK_TOKEN', 
 
 -- changeset jerry:5
 alter table t_memo add column `source` TEXT default  'web';
+
+-- changeset jerry:6
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('PUSH_OFFICIAL_SQUARE', '', 'false');

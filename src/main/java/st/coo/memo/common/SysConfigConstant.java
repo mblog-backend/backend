@@ -20,4 +20,5 @@ public class SysConfigConstant {
     public final static String COMMENT_APPROVED = "COMMENT_APPROVED";
     public final static String WEB_HOOK_URL = "WEB_HOOK_URL";
     public final static String WEB_HOOK_TOKEN = "WEB_HOOK_TOKEN";
+    public final static String PUSH_OFFICIAL_SQUARE = "PUSH_OFFICIAL_SQUARE";
 }

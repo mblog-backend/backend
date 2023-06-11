@@ -75,6 +75,9 @@ public class MemoService {
     @Value("${DB_TYPE:}")
     private String dbType;
 
+    @Value("${official.square.url}")
+    private String officialSquareUrl;
+
 
     @Resource
     private HttpClient httpClient;
@@ -100,6 +103,12 @@ public class MemoService {
         resourceMapper.deleteByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(id)));
         memoMapper.deleteById(id);
         commentMapperExt.deleteByQuery(QueryWrapper.create().and(T_COMMENT.MEMO_ID.eq(id)));
+
+        TUser user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());
+
+        threadPoolTaskExecutor.execute(() -> {
+            pushOfficialSquare(tMemo,user,MemoType.REMOVE);
+        });
     }
 
     public void setMemoPriority(int id, boolean set) {
@@ -189,12 +198,63 @@ public class MemoService {
             }
             return true;
         });
+        TUser user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());
 
-        threadPoolTaskExecutor.execute(()->{
+        threadPoolTaskExecutor.execute(() -> {
+            pushOfficialSquare(tMemo, user, MemoType.SAVE);
             notifyWebhook(tMemo);
         });
 
         return tMemo.getId();
+    }
+
+
+    private void pushOfficialSquare(TMemo memo, TUser user, MemoType memoType) {
+        boolean pushOfficialSquare = sysConfigService.getBoolean(SysConfigConstant.PUSH_OFFICIAL_SQUARE);
+        if (pushOfficialSquare && Objects.equals(memo.getVisibility(), Visibility.PUBLIC.name())) {
+            String url = officialSquareUrl;
+            String token = sysConfigService.getString(SysConfigConstant.WEB_HOOK_TOKEN);
+            if (Objects.equals(memoType, MemoType.REMOVE)) {
+                url = url + "/api/memo/remove";
+            } else {
+                url = url + "/api/memo/push";
+            }
+            HttpPost request = new HttpPost(url);
+
+            if (StringUtils.hasText(token)) {
+                request.setHeader("token", token);
+            }
+
+            request.setHeader("content-type", "application/json;charset=utf8");
+
+            String backendUrl = sysConfigService.getString(SysConfigConstant.DOMAIN);
+
+            List<TResource> list = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
+            Gson gson = new Gson();
+            String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
+
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("content", memo.getContent());
+            map.put("tags", memo.getTags());
+            map.put("publishTime", memo.getCreated());
+            map.put("author", user.getDisplayName());
+            map.put("website", backendUrl);
+            map.put("memoId", memo.getId());
+            map.put("avatarUrl", user.getAvatarUrl());
+            map.put("userId", user.getId());
+            map.put("resources", list.stream().map(r -> convertToResourceDto(domain, r)).toList());
+            String body = gson.toJson(map);
+            log.info("发送webhook到{},body:{}", url, body);
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            try {
+                request.setEntity(new StringEntity(body));
+                HttpResponse httpResponse = httpClient.execute(request);
+                String response = EntityUtils.toString(httpResponse.getEntity());
+                log.info("发送webhook成功,返回码:{},body:{},耗时:{}ms", httpResponse.getStatusLine().getStatusCode(),response, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            } catch (IOException e) {
+                log.error("发送webhook异常", e);
+            }
+        }
     }
 
 
@@ -205,7 +265,7 @@ public class MemoService {
         if (Objects.equals(memo.getVisibility(), Visibility.PUBLIC.name()) && StringUtils.hasText(url)) {
             HttpPost request = new HttpPost(url);
 
-            if (StringUtils.hasText(token)){
+            if (StringUtils.hasText(token)) {
                 request.setHeader("token", token);
             }
 
@@ -247,7 +307,6 @@ public class MemoService {
         }
         String oldTags = existMemo.getTags();
         String content = updateMemoRequest.getContent();
-        String[] lines = content.split("\n");
         TMemo tMemo = new TMemo();
         tMemo.setId(existMemo.getId());
         List<String> tags = parseTags(updateMemoRequest.getContent());
@@ -258,6 +317,7 @@ public class MemoService {
         if (updateMemoRequest.getVisibility() != null) {
             tMemo.setVisibility(updateMemoRequest.getVisibility().name());
         }
+        tMemo.setCreated(existMemo.getCreated());
         List<TTag> existsTagList;
         List<String> oldTagList = new ArrayList<>();
         if (StringUtils.hasText(oldTags)) {
@@ -301,6 +361,12 @@ public class MemoService {
 
             return true;
         });
+        TUser user = userMapper.selectOneById(StpUtil.getLoginIdAsInt());
+
+        threadPoolTaskExecutor.execute(() -> {
+            pushOfficialSquare(tMemo, user, MemoType.SAVE);
+        });
+
         return existMemo.getId();
     }
 
@@ -330,7 +396,6 @@ public class MemoService {
             listMemoRequest.setCurrentUserId(StpUtil.getLoginIdAsInt());
         }
         listMemoRequest.setDbType(dbType);
-//        log.info(new Gson().toJson(listMemoRequest));
         long total = memoMapper.countMemos(listMemoRequest);
         List<MemoDto> list = Lists.newArrayList();
         if (total > 0) {
@@ -388,20 +453,22 @@ public class MemoService {
         tMemo.setUnApprovedCommentCount(commentMapperExt.selectCountByQuery(QueryWrapper.create().and(T_COMMENT.MEMO_ID.eq(memo.getId())).and(T_COMMENT.USER_ID.lt(0).and(T_COMMENT.APPROVED.eq(0)))));
         String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
         List<TResource> resources = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
-        tMemo.setResources(resources.stream().map(r -> {
-            ResourceDto item = new ResourceDto();
-            if (Objects.equals(r.getStorageType(), StorageType.LOCAL.name())) {
-                item.setUrl(domain + r.getExternalLink());
-            } else {
-                item.setUrl(r.getExternalLink());
-            }
-            item.setSuffix(r.getSuffix());
-            item.setPublicId(r.getPublicId());
-            item.setFileType(r.getFileType());
-
-            return item;
-        }).toList());
+        tMemo.setResources(resources.stream().map(r -> convertToResourceDto(domain, r)).toList());
         return tMemo;
+    }
+
+    private static ResourceDto convertToResourceDto(String domain, TResource r) {
+        ResourceDto item = new ResourceDto();
+        if (Objects.equals(r.getStorageType(), StorageType.LOCAL.name())) {
+            item.setUrl(domain + r.getExternalLink());
+        } else {
+            item.setUrl(r.getExternalLink());
+        }
+        item.setSuffix(r.getSuffix());
+        item.setPublicId(r.getPublicId());
+        item.setFileType(r.getFileType());
+
+        return item;
     }
 
 
