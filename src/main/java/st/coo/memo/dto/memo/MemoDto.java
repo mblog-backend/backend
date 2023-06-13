@@ -70,4 +70,6 @@ public class MemoDto {
     private List<ResourceDto>resources;
 
 
+    @Schema(title = "来源")
+    private String source;
 }

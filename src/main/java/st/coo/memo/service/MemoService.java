@@ -244,7 +244,7 @@ public class MemoService {
             map.put("userId", user.getId());
             map.put("resources", list.stream().map(r -> convertToResourceDto(domain, r)).toList());
             String body = gson.toJson(map);
-            log.info("发送webhook到{},body:{}", url, body);
+            log.info("发送webhook到 {} ,body:{}", url, body);
             Stopwatch stopwatch = Stopwatch.createStarted();
             try {
                 request.setEntity(new StringEntity(body));

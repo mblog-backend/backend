@@ -22,6 +22,7 @@
         <result column="enableComment" property="enableComment" jdbcType="INTEGER" />
         <result column="likeCount" property="likeCount" jdbcType="INTEGER" />
         <result column="liked" property="liked" jdbcType="INTEGER" />
+        <result column="source" property="source" jdbcType="VARCHAR" />
         <collection property="resources" ofType="st.coo.memo.dto.resource.ResourceDto">
             <result column="publicId" property="publicId" jdbcType="VARCHAR" />
             <result column="url" property="url" jdbcType="VARCHAR" />
@@ -143,7 +144,8 @@
         t.view_count as viewCount,
         t.enable_comment as enableComment,
         t.like_count as likeCount,
-        t.comment_count as commentCount
+        t.comment_count as commentCount,
+        t.source as `source`
         FROM
         t_memo t
         <if test="login == true and liked == true">
