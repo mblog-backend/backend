@@ -59,9 +59,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-//    public ResponseEntity<ResponseDTO<Void>> defaultExceptionHandler(DuplicateKeyException ex) {
     public ResponseDTO<Void> defaultExceptionHandler(DuplicateKeyException ex) {
         return ResponseDTO.fail(ResponseCode.param_error.getCode(), "数据已存在");
-//        return ResponseEntity.status(500).body(ResponseDTO.fail(ResponseCode.param_error.getCode(), "数据已存在"));
     }
 }

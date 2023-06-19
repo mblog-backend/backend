@@ -26,7 +26,9 @@ import st.coo.memo.common.SysConfigConstant;
 import st.coo.memo.dto.sysConfig.SaveSysConfigRequest;
 import st.coo.memo.dto.sysConfig.SysConfigDto;
 import st.coo.memo.entity.TSysConfig;
+import st.coo.memo.entity.TUser;
 import st.coo.memo.mapper.SysConfigMapperExt;
+import st.coo.memo.mapper.UserMapperExt;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static st.coo.memo.entity.table.Tables.T_SYS_CONFIG;
+import static st.coo.memo.entity.table.Tables.T_USER;
 
 @Slf4j
 @Component
@@ -50,6 +53,11 @@ public class SysConfigService {
     @Resource
     private HttpClient httpClient;
 
+    @Resource
+    private UserMapperExt userMapperExt;
+
+    @Value("${MBLOG_EMBED:}")
+    private String embed;
 
     @PostConstruct
     public void init(){
@@ -68,9 +76,22 @@ public class SysConfigService {
         String token = getString(SysConfigConstant.WEB_HOOK_TOKEN);
 
         if (push2OfficialSquare.isPresent()){
-            String url = officialSquareUrl+"/api/token/add";
+
+            TUser admin = userMapperExt.selectOneByQuery(QueryWrapper.create().and(T_USER.ROLE.eq("ADMIN")));
+            Optional<SysConfigDto> backendDomain = saveSysConfigRequest.getItems().stream()
+                    .filter(r -> Objects.equals(r.getKey(), SysConfigConstant.DOMAIN) && Objects.equals("true", r.getValue())).findFirst();
+            Optional<SysConfigDto> corsDomainList = saveSysConfigRequest.getItems().stream()
+                    .filter(r -> Objects.equals(r.getKey(), SysConfigConstant.CORS_DOMAIN_LIST) ).findFirst();
+            String url = officialSquareUrl+"/api/token";
             Map<String, Object> map = Maps.newHashMap();
             map.put("token", token);
+            map.put("author", admin.getDisplayName());
+            map.put("avatarUrl", admin.getAvatarUrl());
+            if (StringUtils.isNotEmpty(embed) && backendDomain.isPresent()){
+                map.put("website", backendDomain.get().getValue());
+            }else if (StringUtils.isEmpty(embed) && corsDomainList.isPresent() && StringUtils.isNotEmpty(corsDomainList.get().getValue())){
+                map.put("website", corsDomainList.get().getValue().split(",")[0]);
+            }
             String body = new Gson().toJson(map);
             log.info("注册token {},body:{}", url, body);
             Stopwatch stopwatch = Stopwatch.createStarted();

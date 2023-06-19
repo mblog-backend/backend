@@ -19,4 +19,5 @@ ADD ./target/classes/*.properties /app/
 COPY --from=front /app/mblog-front/dist /app/static
 ENV JAVA_OPTS="-Xms512m -Xmx512m"
 ENV DB_TYPE=""
+ENV MBLOG_EMBED=true
 CMD java $JAVA_OPTS -jar /app/memo-0.0.1-SNAPSHOT.jar --spring.config.location=/app/application$DB_TYPE.properties

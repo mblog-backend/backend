@@ -102,6 +102,9 @@ public class ResourceService implements ApplicationContextAware {
         if (StringUtils.isEmpty(fileType)){
             fileType = "image/"+ FileUtil.getSuffix(targetPath);
         }
+        if (!Objects.equals(storageType.name(),StorageType.LOCAL.name())){
+            FileUtil.del(targetPath);
+        }
 
         TResource tResource = new TResource();
         tResource.setPublicId(publicId);

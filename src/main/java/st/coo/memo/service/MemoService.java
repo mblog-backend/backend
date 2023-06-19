@@ -33,6 +33,7 @@ import st.coo.memo.entity.*;
 import st.coo.memo.mapper.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.*;
 import java.util.*;
@@ -79,6 +80,8 @@ public class MemoService {
     private String officialSquareUrl;
 
 
+    @Value("${MBLOG_EMBED:}")
+    private String embed;
     @Resource
     private HttpClient httpClient;
 
@@ -231,23 +234,27 @@ public class MemoService {
 
             List<TResource> list = resourceMapper.selectListByQuery(QueryWrapper.create().and(T_RESOURCE.MEMO_ID.eq(memo.getId())));
             Gson gson = new Gson();
-            String domain = sysConfigService.getString(SysConfigConstant.DOMAIN);
+            String corsDomainList = sysConfigService.getString(SysConfigConstant.CORS_DOMAIN_LIST);
 
             Map<String, Object> map = Maps.newHashMap();
             map.put("content", memo.getContent());
             map.put("tags", memo.getTags());
-            map.put("publishTime", memo.getCreated());
+            map.put("publishTime", memo.getCreated().getTime());
             map.put("author", user.getDisplayName());
-            map.put("website", backendUrl);
+            if (StringUtils.hasText(embed) && StringUtils.hasText(backendUrl)){
+                map.put("website",backendUrl);
+            }else if (!StringUtils.hasText(embed) && StringUtils.hasText(corsDomainList)){
+                map.put("website", corsDomainList.split(",")[0]);
+            }
             map.put("memoId", memo.getId());
             map.put("avatarUrl", user.getAvatarUrl());
             map.put("userId", user.getId());
-            map.put("resources", list.stream().map(r -> convertToResourceDto(domain, r)).toList());
+            map.put("resources", list.stream().map(r -> convertToResourceDto(backendUrl, r)).toList());
             String body = gson.toJson(map);
             log.info("发送webhook到 {} ,body:{}", url, body);
             Stopwatch stopwatch = Stopwatch.createStarted();
             try {
-                request.setEntity(new StringEntity(body));
+                request.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
                 HttpResponse httpResponse = httpClient.execute(request);
                 String response = EntityUtils.toString(httpResponse.getEntity());
                 log.info("发送webhook成功,返回码:{},body:{},耗时:{}ms", httpResponse.getStatusLine().getStatusCode(),response, stopwatch.elapsed(TimeUnit.MILLISECONDS));
@@ -467,7 +474,8 @@ public class MemoService {
         item.setSuffix(r.getSuffix());
         item.setPublicId(r.getPublicId());
         item.setFileType(r.getFileType());
-
+        item.setStorageType(r.getStorageType());
+        item.setFileName(r.getFileName());
         return item;
     }
 
