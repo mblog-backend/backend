@@ -49,10 +49,6 @@ DEMO:
 
 #### [Nas安装教程](https://post.smzdm.com/p/agqerg43/?zdm_ss=Android_3635293780_&send_by=3635293780&from=singlemessage&invite_code=zdm4tzvf9ainv)
 
-#### 微信交流群
-
-![](https://images.kingwrcy.cn/blog/4f324db9e241d29d38262c27c8bd34b.jpg)
-
 <details><summary>图片预览</summary>
 
 ![](https://images.kingwrcy.cn/blog/20230511175950.png)
