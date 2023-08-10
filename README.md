@@ -14,12 +14,13 @@
 ## 项目介绍
 mBlog,全称micro blog.基于java+mysql.支持自部署的前后端分离的微博,可单用户使用,也可以支持多用户.
 
+## Replit在线免费一键部署
 
-DEMO:
+[点我部署](https://replit.com/@kingwrcy/mblog-backend?v=1)
+
+## DEMO:
 
 [mblog.coo.st](https://mblog.coo.st)
-
-[mblog.cooolr.online(开放注册)](https://mblog.cooolr.online/) 基于java+mysql,前后分离
 
 [m.kingwrcy.cn(开放注册,匿名评论等)](https://m.kingwrcy.cn) 基于java+sqlite,前后不分离,内存128MB
 
